@@ -1,0 +1,190 @@
+% --This template prepared by PRAMOD KUMAR S (pramod.s86@gmail.com) only for reference---
+%url:
+%www.youtube.com/channel/UCO9kf_V4twFdM4ROdIfy7rw
+%www.researchgate.net/profile/Pramod_Kumar3 
+%www.linkedin.com/in/pramod-kumar-s-432351141 
+
+% ----------------------Title page--------------------------------------------------
+\documentclass[oneside,12pt]{Classes/VTU}
+\usepackage{fancyhdr}
+\usepackage{Times}
+
+
+\renewcommand{\submittedtext}{\large{\textbf{\\VISVESVARAYA TECHNOLOGICAL UNIVERSITY }}\\
+ Belagavi, Karnataka - 590 018 }
+
+\title{ \normalfont \small{A Project Report on}\\ 
+\large{\textbf{PERFORMANCE EVALUATION AND RELIABILITY ANALYSIS OF  PREFABRICATED  CONCRETE STRUCTURES}}}
+
+\degree{Submitted in partial fulfillment of the requirements for the conferment of degree of\\ 
+	\textbf{{\large {\\ MASTER OF TECHNOLOGY}}} \\
+	 in \\   
+	\textbf{\large{ CYBERSECURITY}}}
+\author{by \\
+\begin{center}
+\begin{tabular}{ c c}
+\textbf{REKHA B} &       \textbf{1BY22IS001}\\ 
+\end{tabular}
+\end{center} 
+%\vspace{2mm} % for 3 authors uncomment this line
+%\vspace{4mm} % for 2 authors uncomment this line
+%\vspace{6mm} % for 1 author uncomment this line
+}
+
+\collegeordept{Under the Guidance of\\ 
+\textbf{ D{\tiny{R}}. PRAKASH GL}} 
+\university{Professor, Department of ISE \\}
+
+
+\dept{\textbf{\\DEPARTMENT OF INFORMATION SCIENCE AND ENGINEERING \\
+		  ( An autonomous institution under VTU)\\
+		BMS INSTITUTE OF TECHNOLOGY AND MANAGEMENT\\
+		Avalahalli, Yelahanka, Bengaluru, Karnataka -560119} }
+\degreedate{\textbf{September 2021}}
+
+
+
+% ---------------------Package and page setup-------------------------------------------
+\hbadness=10000
+\hfuzz=50pt
+%\usepackage{placeins}
+\usepackage[section]{placeins}
+\usepackage{StyleFiles/watermark}
+\usepackage{multirow}
+\usepackage{epsfig}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{rotating}
+\usepackage{lipsum}
+\usepackage{subfig}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{setspace}
+\usepackage[T1]{fontenc}
+\usepackage{alltt}
+\usepackage{setspace}
+\usepackage{dashrule}
+\usepackage{pdfpages}
+\usepackage{graphicx,wrapfig,lipsum}
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+\usepackage{pgfplots}
+\usepackage{caption,booktabs}
+\usepackage{comment}
+\usepackage{amsmath}
+\usepackage{soul}
+\usepackage{adjustbox}
+\usepackage{fancyhdr}
+\usepackage{longtable}
+
+%\usepackage{setspace}
+%\setlength{\voffset}{-0.75in}
+%\setlength{\headsep}{0pt}
+%\usepackage{tocloft}
+%\pgfplotsset{compat=1.17} 
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{}
+\fancyhead[RE,LO]{}
+%\fancyfoot[CE,CO]{\leftmark}
+\fancyfoot[RE,LO]{Department of ISE, BMSIT, Bengaluru}
+\fancyfoot[LE,RO]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}% Default \headrulewidth is 0.4pt
+\renewcommand{\footrulewidth}{0.4pt}% Default \footrulewidth is 0pt
+
+
+
+\begin{document}
+
+\renewcommand\baselinestretch{1.2}
+\baselineskip=18pt plus1pt
+
+\pagenumbering{gobble} 
+\maketitle %insert title page first 
+\pagenumbering{gobble} %remove page number for certificate page
+\include{CertificateGuide/certificateGuide} %certificate page. For M.Tech./Ph.D certificate contents are differ
+%\include{Declaration/declaration}  %uncomment if require for M.Tech./Ph.D 
+
+\begin{romanpages} %start roman page numbering
+\addcontentsline{toc}{chapter}{Abstract} %insert in contents 
+\include{Abstract/Abstract} %abstract page
+\addcontentsline{toc}{chapter}{Acknowledgements} %insert in contents
+\include{Acknowledgement/acknowledgement} %acknowledgement page
+\include{Acknowledgement/declaration}
+%\renewcommand{\contentsname}{\hfill\bfseries\Huge CONTENTS \hfill}   
+%\renewcommand{\cftaftertoctitle}{\hfill}
+
+\normalsize{\tableofcontents} %list contents
+%\title{ \begin{huge}
+%\textbf{Geometry of manifolds and differential forms} 
+
+%\newpage %use for page number adjustment  
+
+\addcontentsline{toc}{chapter}{List of Figures} %insert in contents 
+
+\renewcommand{\contentsname}{\hfill\bfseries\huge {\centering List o Figures} \hfill} 
+%Begin Louella
+%\renewcommand{\cftloftitlefont}{\hspace*{\fill}\Huge\bfseries}
+%\renewcommand{\cftafterloftitle}{\hspace*{\fill}}
+% End Louella
+
+
+\renewcommand{\listfigurename}{\centering List of Figures}
+\normalsize\centering{\listoffigures} %list of figures
+%\end{huge} }
+%\end{center}
+
+\newpage %use for page number adjustment 
+%\begin{center}
+ % \normalsize\bfseries\MakeUppercase{ABSTRACT}
+
+\addcontentsline{toc}{chapter}{List of Tables}  %insert in contents
+\renewcommand{\listtablename}{\centering List of Tables}
+\normalsize{\listoftables} %list of tables
+%\end{center}
+%\newpage %use for page number adjustment  
+%\addcontentsline{toc}{chapter}{List of Symbols} %insert in contents
+%\include{Misc/Abbrevations}
+
+%\newpage %use for page number adjustment  
+%\addcontentsline{toc}{chapter}{List of Publications} %insert in contents
+%\include{Misc/PaperList}
+
+
+
+\end{romanpages} %end roman page numbering
+%\usepackage{color,soul}
+\pagenumbering{arabic} %start arabic page numbering    
+%\include{Appendix1/appendix1}                         
+\include{Chapter1/chapter1} %chapters page insert  
+\include{Chapter2/chapter2} %2
+\include{Chapter3/chapter3}
+\include{Chapter4/chapter4} %2
+\include{Chapter5/chapter5}%3
+\include{Chapter6/chapter6} %4
+%\include{Chapter7/chapter7}
+%\include{Chapter8/chapter8}%5
+%\include{Chapter9/chapter9}%6
+%\include{Conclusions/conclusions}%7
+%\include{Futurework/futurework}
+%You can create more chapters by 1. create folder then 2.insert above line for page insert
+
+%\appendix %uncomment if require 
+%\include{Appendix1/appendix1} %uncomment if require 
+%\include{Appendix2/appendix2} %uncomment if require 
+
+%\nocite{*} %to include all references from .bib file 
+\addcontentsline{toc}{chapter}{References}
+
+%\bibliographystyle{plainnat}
+\bibliographystyle{IEEEtran}
+\include{References/ref}
+
+%\bibliography{References/references} % press F11 (for Texmaker) five times for all reference to build.
+
+\end{document}
+
