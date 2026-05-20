@@ -1,6 +1,62 @@
-\chapter{\label{Appendix-B}Title of Appendix-B}
+﻿\chapter{Implementation and Experimental Details}
 
-Type in the details of Appendix-B. 
+This appendix documents the supplementary implementation details, training configuration, and software environment used by LungInsight.
 
- 
-% ------------------------------------------------------------------------
+\section{Model Implementation}
+The LungInsight architecture consists of two parallel branches:
+
+\begin{itemize}
+    \item A DenseNet-121 imaging branch adapted for single-channel grayscale CT input, followed by a 256-dimensional projection layer.
+    \item A three-layer clinical multilayer perceptron that processes the 18-dimensional clinical vector into a 64-dimensional embedding.
+\end{itemize}
+
+The two embeddings are concatenated into a 320-dimensional fused representation. Two output heads operate on this representation: a binary malignancy head with sigmoid activation and a four-class stage head with softmax activation.
+
+\section{Training Configuration}
+The model was trained with the following configuration:
+
+\begin{tabular}{lp{0.7\textwidth}}
+\textbf{Optimizer} & AdamW with weight decay $10^{-4}$ \\
+\textbf{Backbone learning rate} & $1 \times 10^{-4}$ \\
+\textbf{Projection/head learning rate} & $5 \times 10^{-4}$ \\
+\textbf{Batch size} & 16 paired CT and clinical examples \\
+\textbf{Epochs} & 60 \\
+\textbf{Scheduler} & Cosine annealing with warm restarts \\
+\textbf{Warm-up strategy} & backbone frozen for first 3 epochs \\
+\textbf{Mixed precision} & Enabled with \texttt{torch.cuda.amp} \\
+\end{tabular}
+
+Early stopping monitored validation ROC-AUC with a patience of 10 epochs. The checkpoint with the best validation ROC-AUC was retained for evaluation.
+
+\section{Explainability and Inference}
+Grad-CAM was applied to the last convolutional block of the DenseNet imaging branch. During inference, all batch-normalization layers were set to evaluation mode and the Grad-CAM computation was performed inside a \texttt{torch.no\_grad()} context to avoid retaining unnecessary computation graphs.
+
+SHAP values were computed using a \texttt{DeepExplainer} with a background set of 100 representative training clinical feature vectors. Separate attributions were generated for clinical inputs and fused representations.
+
+\section{Dashboard and Deployment}
+The clinical decision-support interface was implemented with Streamlit. The dashboard accepts either a DICOM CT series upload or a CSV file containing clinical covariates. It displays:
+
+\begin{itemize}
+    \item predicted malignancy probability,
+    \item predicted disease stage with confidence scores,
+    \item Grad-CAM heatmap overlay on the most informative axial slice,
+    \item SHAP waterfall plot for the current patient and beeswarm summary for the cohort.
+\end{itemize}
+
+Model weights were exported to TorchScript for faster dashboard inference, and SHAP background samples were precomputed on startup to reduce prediction latency.
+
+\section{Software Environment}
+The implementation used the following software stack:
+
+\begin{itemize}
+    \item Python 3.10
+    \item PyTorch 2.1 and torchvision
+    \item scikit-learn
+    \item pytorch-grad-cam
+    \item shap
+    \item SimpleITK
+    \item Streamlit 1.32
+    \item Docker for containerization
+\end{itemize}
+
+The appendix is intended to provide enough technical detail to reproduce the preprocessing, model training, and dashboard deployment described in the thesis.

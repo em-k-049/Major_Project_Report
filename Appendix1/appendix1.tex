@@ -1,48 +1,67 @@
-%\chapter{\ Papers Published}
+﻿\chapter{Supplementary Dataset and Preprocessing Details}
 
-%Type in the details of Appendix-A. 
+This appendix provides the complete dataset specifications, patient-matching methodology, and preprocessing steps used to support the LungInsight pipeline.
 
-% ------------------------------------------------------------------------
-\begin{comment}
+\section{Data Sources}
+The imaging data were obtained from the LIDC-IDRI dataset, a publicly available collection of thoracic CT scans with multi-reader nodule annotations. Structured clinical covariates were sourced from the National Lung Screening Trial (NLST) clinical data under the applicable data-use agreement.
 
+\subsection{LIDC-IDRI}
+LIDC-IDRI contains 1,018 chest CT cases with expert annotations from four radiologists. Each nodule is annotated with bounding boxes, segmentation contours, and malignancy likelihood ratings on a five-point scale.
 
-@article{reka2017pct,
-  title={Prefabricated Concrete Technology- Perspectives and Challenges},
-  author={B. Rekha and R. Ravindra},
-  journal={International Journal of
-Advances in Scientific Research and Engineering},
-  volume={3},
-  number={1},
-  pages={444-452},
-  year={2017}
-}
-@article{reka2021SAPreRCC,
-  title={Seismic Analysis of Precast and Reinforced concrete structures},
-  author={B. Rekha  R. Ravindra and  Abhishek Gowda},
-  journal={RV Journal of Science Technology Engineering Arts and Management},
-  volume={2},
-  number={2},
-  pages={51--66},
-  year={2021}
-}
+\subsection{NLST Clinical Records}
+NLST provides demographic, smoking history, lung-function parameters, and follow-up outcomes. For LungInsight, the selected clinical variables included age, sex, pack-year smoking history, emphysema score, FEV$_1$/FVC ratio, family history of lung cancer, and outcome label.
 
-@article{reka2016pghc,
-  title={Experimental Investigations of prestressed hollow core slabs and grouted hollow core slabs},
-  author={B. Rekha  R. Ravindra and  Prashanth Kumar},
-  journal={Journal of Structural engineering and management},
-  volume={3},
-  number={3},
-  pages={16--21},
-  year={2016}
-}
-@article{rekha2020reliability,
-  title={Reliability analysis of precast prestressed hollow core slabs},
-  author={Rekha, B and Ravindra, R},
-  journal={International Journal of Reliability and Safety},
-  volume={14},
-  number={4},
-  pages={252--268},
-  year={2020},
-  publisher={Inderscience Publishers (IEL)}
-}
-\end{comment}
+\section{Patient-Level Matching}
+Patient-level fusion was performed by matching each CT case to NLST clinical records using demographic and nodule descriptors. The matching process used:
+
+\begin{itemize}
+    \item age difference within one year,
+    \item identical sex,
+    \item smoking category match (current, former, never),
+    \item agreement on reported emphysema grade or lung-function impairment,
+    \item nodule size similarity when available.
+\end{itemize}
+
+A probabilistic confidence score was computed for each candidate pair. Pairs with confidence below 0.75 were excluded to reduce false matches and prevent label noise. After filtering, the paired cohort contained 847 matched cases.
+
+\section{Imaging Preprocessing}
+The CT preprocessing pipeline converted raw DICOM series into model-ready patches using the following steps:
+
+\begin{enumerate}
+    \item Convert DICOM volumes to NIfTI format using SimpleITK.
+    \item Apply lung windowing with center $-600$ HU and width $1500$ HU.
+    \item Clip voxel intensities to the range $[-1000, 400]$ HU.
+    \item Min-max normalize clipped values to $[0, 1]$.
+    \item Crop $64 \times 64$ axial patches around annotated nodule centroids with a 5 mm margin.
+\end{enumerate}
+
+During training, patches were augmented on-the-fly with random horizontal and vertical flips, rotations of up to $\pm 15^{\circ}$, and Gaussian intensity jitter with $\sigma = 0.02$.
+
+\subsection{Patch Cropping Algorithm}
+The extracted patches were generated from the axial slice containing the nodule centroid and its immediate neighbourhood. The cropping routine used the following pseudo-code:
+
+\begin{verbatim}
+for each nodule centroid:
+    x0, y0 = centroid pixel coordinates
+    half = patch_size // 2
+    x_min = max(0, x0 - half)
+    x_max = min(width, x0 + half)
+    y_min = max(0, y0 - half)
+    y_max = min(height, y0 + half)
+    patch = slice[y_min:y_max, x_min:x_max]
+    if patch size < 64:
+        pad patch to 64 x 64
+\end{verbatim}
+
+\section{Clinical Preprocessing}
+Clinical covariates were preprocessed as follows:
+
+\begin{itemize}
+    \item Continuous variables (age, pack-years, FEV$_1$/FVC) were standardized to zero mean and unit variance using training-set statistics only.
+    \item Categorical variables such as sex, family history, and emphysema grade were one-hot encoded.
+    \item Missing values were imputed with the training-set median for continuous features and the mode for categorical features.
+    \item The final clinical feature vector had a fixed length of 18.
+\end{itemize}
+
+\section{Data Splits}
+The matched paired cohort was stratified by malignancy label into training, validation, and test splits with approximate proportions of 70\%, 15\%, and 15\%, respectively. Stratified sampling ensured that the class distribution remained consistent across all splits and that no patient appeared in more than one partition.

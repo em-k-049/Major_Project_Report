@@ -429,6 +429,12 @@ INPUT Chapter5\chapter5.aux
 INPUT .\Chapter6\chapter6.aux
 INPUT .\Chapter6\chapter6.aux
 INPUT Chapter6\chapter6.aux
+INPUT .\Appendix1\appendix1.aux
+INPUT .\Appendix1\appendix1.aux
+INPUT Appendix1\appendix1.aux
+INPUT .\Appendix2\appendix2.aux
+INPUT .\Appendix2\appendix2.aux
+INPUT Appendix2\appendix2.aux
 INPUT .\References\ref.aux
 INPUT .\References\ref.aux
 INPUT References\ref.aux
@@ -629,15 +635,24 @@ OUTPUT Chapter6\chapter6.aux
 INPUT .\Chapter6\chapter6.tex
 INPUT .\Chapter6\chapter6.tex
 INPUT Chapter6\chapter6.tex
+INPUT .\Appendix1\appendix1.tex
+INPUT .\Appendix1\appendix1.tex
+OUTPUT Appendix1\appendix1.aux
+INPUT .\Appendix1\appendix1.tex
+INPUT .\Appendix1\appendix1.tex
+INPUT Appendix1\appendix1.tex
+INPUT .\Appendix2\appendix2.tex
+INPUT .\Appendix2\appendix2.tex
+OUTPUT Appendix2\appendix2.aux
+INPUT .\Appendix2\appendix2.tex
+INPUT .\Appendix2\appendix2.tex
+INPUT Appendix2\appendix2.tex
 INPUT .\References\ref.tex
 INPUT .\References\ref.tex
 OUTPUT References\ref.aux
 INPUT .\References\ref.tex
 INPUT .\References\ref.tex
 INPUT References\ref.tex
-INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmri8t.tfm
-INPUT C:\Program Files\MiKTeX\fonts\vf\adobe\times\ptmri8t.vf
-INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmri8r.tfm
 INPUT Thesis.aux
 INPUT .\CertificateGuide\certificateGuide.aux
 INPUT .\CertificateGuide\certificateGuide.aux
@@ -669,6 +684,12 @@ INPUT Chapter5\chapter5.aux
 INPUT .\Chapter6\chapter6.aux
 INPUT .\Chapter6\chapter6.aux
 INPUT Chapter6\chapter6.aux
+INPUT .\Appendix1\appendix1.aux
+INPUT .\Appendix1\appendix1.aux
+INPUT Appendix1\appendix1.aux
+INPUT .\Appendix2\appendix2.aux
+INPUT .\Appendix2\appendix2.aux
+INPUT Appendix2\appendix2.aux
 INPUT .\References\ref.aux
 INPUT .\References\ref.aux
 INPUT References\ref.aux

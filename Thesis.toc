@@ -67,7 +67,24 @@
 \contentsline {section}{\numberline {5.2}Presentation of Results}{24}{section.5.2}%
 \contentsline {section}{\numberline {5.3} Analysis of Results}{25}{section.5.3}%
 \contentsline {section}{\numberline {5.4} Comparison with Existing Work}{25}{section.5.4}%
-\contentsline {section}{\numberline {5.5} Discussion of Key Findings}{25}{section.5.5}%
-\contentsline {section}{\numberline {5.6} Limitations of the Study}{25}{section.5.6}%
-\contentsline {chapter}{\numberline {6}Conclusions and Future Enhancement}{26}{chapter.6}%
-\contentsline {chapter}{References}{28}{chapter.6}%
+\contentsline {section}{\numberline {5.5} Discussion of Key Findings}{26}{section.5.5}%
+\contentsline {section}{\numberline {5.6} Limitations of the Study}{27}{section.5.6}%
+\contentsline {chapter}{\numberline {6}Conclusions and Future Enhancement}{28}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Conclusion}{28}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Future Enhancement}{28}{section.6.2}%
+\contentsline {chapter}{\numberline {A}Supplementary Dataset and Preprocessing Details}{30}{chapter.A}%
+\contentsline {section}{\numberline {A.1}Data Sources}{30}{section.A.1}%
+\contentsline {subsection}{\numberline {A.1.1}LIDC-IDRI}{30}{subsection.A.1.1}%
+\contentsline {subsection}{\numberline {A.1.2}NLST Clinical Records}{30}{subsection.A.1.2}%
+\contentsline {section}{\numberline {A.2}Patient-Level Matching}{31}{section.A.2}%
+\contentsline {section}{\numberline {A.3}Imaging Preprocessing}{31}{section.A.3}%
+\contentsline {subsection}{\numberline {A.3.1}Patch Cropping Algorithm}{32}{subsection.A.3.1}%
+\contentsline {section}{\numberline {A.4}Clinical Preprocessing}{32}{section.A.4}%
+\contentsline {section}{\numberline {A.5}Data Splits}{32}{section.A.5}%
+\contentsline {chapter}{\numberline {B}Implementation and Experimental Details}{33}{chapter.B}%
+\contentsline {section}{\numberline {B.1}Model Implementation}{33}{section.B.1}%
+\contentsline {section}{\numberline {B.2}Training Configuration}{33}{section.B.2}%
+\contentsline {section}{\numberline {B.3}Explainability and Inference}{34}{section.B.3}%
+\contentsline {section}{\numberline {B.4}Dashboard and Deployment}{34}{section.B.4}%
+\contentsline {section}{\numberline {B.5}Software Environment}{35}{section.B.5}%
+\contentsline {chapter}{References}{36}{section.B.5}%

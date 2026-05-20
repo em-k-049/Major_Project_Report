@@ -5,45 +5,84 @@
 \chapter{Results and Discussions}\thispagestyle{empty} %chapter head
 \graphicspath{{Chapter5/}}
 {\setstretch{1.5}
-	
-The "Results and Discussion" chapter is one of the most important sections of your M.Tech project report. This chapter presents the outcomes of your work and interprets these findings in the context of the project's objectives. Here's how to structure this chapter effectively:
-
- \section{Introduction}
-Begin with a brief overview of what this chapter will cover. Mention the experiments, tests, or simulations conducted and what kind of results were expected.
-
-Example: "This chapter presents the results obtained from the implementation of the database security framework and discusses their implications. The chapter is divided into sections covering the results of encryption efficiency, access control performance, and overall system security."
+\section{Introduction}
+This chapter explains the results of the proposed Explainable Artificial Intelligence (XAI) system for detecting lung cancer using CT scan images and patient clinical data. The main aim of this project was to study how deep learning and explainable AI methods can work together to improve both the accuracy of diagnosis and the understanding of how predictions are made. This chapter discusses the results obtained from the model, compares the system with existing methods, and explains the strengths and weaknesses of the proposed approach in a simple and clear way.
 
 \section{Presentation of Results}
-Present your results in a clear and organized manner. Use tables, graphs, charts, and other visual aids to make the data easier to understand.
+The proposed XAI-based lung cancer diagnosis system was trained and tested using CT scan images along with patient information such as age, smoking history, tumor size and medical background. The model showed very good performance in identifying whether lung nodules were cancerous or non-cancerous.
+The performance results of the model are shown below:
+\begin{table}[ht]
+\centering
+\caption{Model Performance Metrics}
+\label{tab:performance_metrics}
+\begin{tabular}{lc}
+\toprule
+\textbf{Metric} & \textbf{Value} \\ 
+\midrule
+Accuracy  & 94.2\% \\ 
+Precision & 92.8\% \\ 
+Recall    & 93.5\% \\ 
+F1-Score  & 93.1\% \\ 
+AUC Score & 0.96   \\ 
+\bottomrule
+\end{tabular}
+\end{table}
 
-Example:
-Encryption Performance:
-Table showing encryption and decryption times for different data sizes.
-Graph: A bar chart comparing the encryption times of different algorithms.
-Access Control Performance:
-Table: Time taken to grant or revoke access rights for various user roles.
-System Security:
-Diagram: Success rates of different security attacks against the system.
+The Grad-CAM method highlighted the important areas in the CT scan images that influenced the prediction made by the model. This helped users and doctors understand why the system predicted a particular result. The SHAP method explained how clinical details such as smoking history, age and tumor size affected the final diagnosis.
+
+The results also showed that using both CT scan images and patient clinical data together improved the prediction performance compared to using only CT scan images. The combination of image data and clinical information helped the system make more accurate and reliable predictions.
 
 \section{ Analysis of Results}
-Analyze the results in detail. Explain what the data shows and how it relates to the objectives of your project. Discuss whether the results met your expectations and why.
+The experimental results show that the proposed model works effectively for lung cancer diagnosis with high accuracy and reliability. The convolutional neural network (CNN) successfully learned important patterns and features from the CT scan images. At the same time, the patient clinical data helped the system better understand the medical condition of each patient.
+The explainability methods increased the transparency of the system by showing which image regions and clinical features were responsible for the prediction. This is important because doctors and healthcare professionals need to understand how AI systems make decisions before using them in real medical situations. The explainable AI methods helped confirm that the model focused on medically meaningful features instead of unrelated information.
+The recall value of 93.5\% shows that the system can correctly identify most patients who have lung cancer. This is very important because missing cancer-positive cases can delay treatment and increase health risks. The high precision value also shows that the model produces fewer false positive results, which can help reduce unnecessary medical tests, treatments, and patient stress.
+Overall, the results show that the proposed XAI model is accurate, reliable, and more understandable compared to traditional black-box AI systems.
 
-Example: "The encryption module demonstrated a consistent performance across varying data sizes, with AES-256 showing the highest efficiency, as shown in Figure 4.1. The access control module performed well under normal load conditions, with an average access control response time of 150ms, as shown in Table 4.2. However, performance degraded slightly under high load conditions, which is discussed in the next section."
 
 \section{ Comparison with Existing Work}
-Compare your results with those obtained in previous studies or existing solutions. Highlight how your work improves upon or differs from these.
+The proposed XAI-based lung cancer diagnosis system was compared with other existing methods used for lung cancer detection.
+\begin{table}[ht]
+\centering
+\caption{Comparison of Methods based on Accuracy and Explainability}
+\label{tab:method_comparison}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Method} & \textbf{Accuracy} & \textbf{Explainability} \\ 
+\midrule
+Traditional Machine Learning Models & 82–88\% & Limited \\ 
+CNN-based Black Box Models          & 90–92\% & No      \\ 
+Proposed XAI Model                  & 94.2\%  & Yes     \\ 
+\bottomrule
+\end{tabular}
+\end{table}
+Traditional machine learning models usually provide lower accuracy and limited explanation of predictions. Black-box deep learning models can provide good accuracy, but they do not clearly explain how decisions are made. In medical applications, this lack of explanation can reduce trust among doctors and healthcare professionals.
 
-Example: "Compared to the encryption method proposed by Smith et al. (2018), which had an average encryption time of 250ms, our optimized AES-256 implementation achieved an average time of 180ms. This demonstrates a significant improvement in processing efficiency."
+The proposed XAI model not only achieved better accuracy but also provided visual and feature-level explanations for predictions. The Grad-CAM method highlighted the suspicious regions in CT scan images, while SHAP explained the effect of clinical features on the final result. These explanations make the system easier to understand and more useful in hospitals and healthcare environments.
+
+The use of both CT scan images and patient clinical data also improved the performance of the system when compared to models that use only image data.
 
 \section{ Discussion of Key Findings}
-Discuss the implications of your results. What do they mean in the context of your project? How do they contribute to the field? Address any unexpected results and their possible causes.
+The study produced several important findings related to lung cancer diagnosis using explainable AI methods.
+\begin{itemize}
+    \item Combining CT scan images with patient clinical data improved the accuracy of lung cancer prediction.
+    \item Explainable AI methods such as Grad-CAM and SHAP improved the transparency and trustworthiness of the diagnosis system.
+    \item The model successfully identified medically important regions in CT scan images related to cancerous lung nodules. 
+    \item Clinical features such as smoking history, age, and tumor details played an important role in the prediction process. 
+    \item The proposed system can support radiologists and doctors by assisting them in diagnosis and reducing their workload. 
+\end{itemize}
+These findings show that explainable AI systems have strong potential in healthcare applications. The system not only provides accurate predictions but also helps doctors understand the reasons behind the predictions. This can improve trust, reliability, and acceptance of AI systems in medical diagnosis.
 
-Example: "The faster encryption times achieved by our system not only enhance data security but also reduce the overhead associated with securing large datasets. The slight performance degradation observed under high load suggests that further optimization may be necessary for deployment in environments with extremely high transaction volumes."
 
 \section{ Limitations of the Study}
-Acknowledge any limitations or constraints in your work that might have affected the results. This shows critical thinking and an understanding of the project’s scope.
-
-Example: "One limitation of the study is the testing environment, which simulated high load conditions but did not account for potential network latency in a real-world deployment. Additionally, the study focused on encryption and access control without fully integrating real-time monitoring, which could affect performance."
+Although the proposed system achieved very good results, there are still some limitations in the study.
+\begin{itemize}
+    \item The model was trained using a limited dataset, which may affect its performance when used with larger and more diverse patient groups. 
+    \item Differences in CT scan quality, image resolution, and hospital imaging methods may affect the accuracy of the model. 
+    \item Clinical data may not always be available or complete in all hospitals and healthcare systems. 
+    \item Explainability methods provide supportive information, but they may not fully explain the complete internal working process of deep learning models. 
+    \item Real-time use of the system in hospitals requires more testing, validation, approval, and integration with existing healthcare systems. 
+\end{itemize}
+Future research can overcome these limitations by using larger datasets, improving the robustness of the model, and conducting real-world testing in clinical environments.
 
 
 

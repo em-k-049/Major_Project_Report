@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.5.20)  20 MAY 2026 20:52
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.5.20)  21 MAY 2026 01:08
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -873,7 +873,7 @@ Package: longtable 2025-10-13 v4.24 Multi-page Table package (DPC)
 \c@LT@tables=\count384
 \c@LT@chunks=\count385
 \LT@p@ftn=\toks68
-) (Thesis.aux (CertificateGuide/certificateGuide.aux) (Abstract/Abstract.aux) (Acknowledgement/acknowledgement.aux) (Acknowledgement/declaration.aux) (Chapter1/chapter1.aux) (Chapter2/chapter2.aux) (Chapter3/chapter3.aux) (Chapter4/chapter4.aux) (Chapter5/chapter5.aux) (Chapter6/chapter6.aux) (References/ref.aux))
+) (Thesis.aux (CertificateGuide/certificateGuide.aux) (Abstract/Abstract.aux) (Acknowledgement/acknowledgement.aux) (Acknowledgement/declaration.aux) (Chapter1/chapter1.aux) (Chapter2/chapter2.aux) (Chapter3/chapter3.aux) (Chapter4/chapter4.aux) (Chapter5/chapter5.aux) (Chapter6/chapter6.aux) (Appendix1/appendix1.aux) (Appendix2/appendix2.aux) (References/ref.aux))
 \openout1 = `Thesis.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 102.
@@ -940,7 +940,7 @@ Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
 Package pgfplots Warning: running in backwards compatibility mode (unsuitable tick labels; missing features). Consider writing \pgfplotsset{compat=1.18} into your preamble.
  on input line 102.
 
-<ThesisFigs/VTU.png, id=292, 231.264pt x 325.215pt>
+<ThesisFigs/VTU.png, id=360, 231.264pt x 325.215pt>
 File: ThesisFigs/VTU.png Graphic file (type png)
 <use ThesisFigs/VTU.png>
 Package pdftex.def Info: ThesisFigs/VTU.png  used on input line 108.
@@ -953,7 +953,7 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 108.
  (C:\Program Files\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<ThesisFigs/logo.jpg, id=294, 341.275pt x 397.98688pt>
+<ThesisFigs/logo.jpg, id=362, 341.275pt x 397.98688pt>
 File: ThesisFigs/logo.jpg Graphic file (type jpg)
 <use ThesisFigs/logo.jpg>
 Package pdftex.def Info: ThesisFigs/logo.jpg  used on input line 108.
@@ -1127,53 +1127,77 @@ Chapter 5.
 
 
 
-]) [25]
+] [25] [26]) [27]
 \openout2 = `Chapter6/chapter6.aux'.
 
  (Chapter6/chapter6.tex
 Chapter 6.
-[26
+[28
 
 
 
 
-]) [27]
+]) [29]
+\openout2 = `Appendix1/appendix1.aux'.
+
+ (Appendix1/appendix1.tex
+Appendix A.
+[30
+
+
+
+
+] [31]) [32]
+\openout2 = `Appendix2/appendix2.aux'.
+
+ (Appendix2/appendix2.tex
+Appendix B.
+
+Overfull \hbox (56.36777pt too wide) in paragraph at lines 18--28
+[][] 
+ []
+
+[33
+
+
+
+
+] [34]) [35]
 \openout2 = `References/ref.aux'.
 
- (References/ref.tex) [28
+ (References/ref.tex [36
 
 
 
 
-]
+]) [37]
 
 Package natbib Warning: There were undefined citations.
 
-(Thesis.aux (CertificateGuide/certificateGuide.aux) (Abstract/Abstract.aux) (Acknowledgement/acknowledgement.aux) (Acknowledgement/declaration.aux) (Chapter1/chapter1.aux) (Chapter2/chapter2.aux) (Chapter3/chapter3.aux) (Chapter4/chapter4.aux) (Chapter5/chapter5.aux) (Chapter6/chapter6.aux) (References/ref.aux))
+(Thesis.aux (CertificateGuide/certificateGuide.aux) (Abstract/Abstract.aux) (Acknowledgement/acknowledgement.aux) (Acknowledgement/declaration.aux) (Chapter1/chapter1.aux) (Chapter2/chapter2.aux) (Chapter3/chapter3.aux) (Chapter4/chapter4.aux) (Chapter5/chapter5.aux) (Chapter6/chapter6.aux) (Appendix1/appendix1.aux) (Appendix2/appendix2.aux) (References/ref.aux))
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-03-20>
  ***********
 Package rerunfilecheck Info: File `Thesis.out' has not changed.
-(rerunfilecheck)             Checksum: FDD2EFEAFCBE4D5B863EB4C08CC6E82A;13900.
+(rerunfilecheck)             Checksum: 24C9F52E037E6002C15CC549B9CAF1BB;17142.
  )
-(\end occurred inside a group at level 2)
+(\end occurred inside a group at level 1)
 
-### simple group (level 2) entered at line 4 ({)
 ### simple group (level 1) entered at line 3 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 39385 strings out of 467691
- 886296 string characters out of 5425054
- 1540879 words of memory out of 5000000
- 67483 multiletter control sequences out of 15000+600000
- 677276 words of font info for 98 fonts, out of 8000000 for 9000
+ 39535 strings out of 467691
+ 890162 string characters out of 5425054
+ 1540878 words of memory out of 5000000
+ 67572 multiletter control sequences out of 15000+600000
+ 674428 words of font info for 96 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 125i,12n,133p,1230b,842s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 125i,12n,133p,1230b,917s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/euler/eusm10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb><C:/Program Files/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Program Files/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on Thesis.pdf (38 pages, 740069 bytes).
+Output written on Thesis.pdf (47 pages, 774698 bytes).
 PDF statistics:
- 641 PDF objects out of 1000 (max. 8388607)
- 123 named destinations out of 1000 (max. 500000)
- 599 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 791 PDF objects out of 1000 (max. 8388607)
+ 167 named destinations out of 1000 (max. 500000)
+ 735 words of extra memory for PDF output out of 10000 (max. 10000000)
 
