@@ -1,114 +1,61 @@
-\chapter{Introduction}\thispagestyle{empty} %chapter head
+\chapter{Introduction}\thispagestyle{empty}
 \graphicspath{{Chapter1/figures/}}
 {\setstretch{1.5}
-%--------------------------------------------------------------------------------------
-Writing an introduction for a project report is an important step in setting the context and providing readers with a clear understanding of what the report will cover. Here’s a general guide on how to structure and write an effective introduction:
 
 \section{Context and Background}
-Begin by providing background information relevant to your project. Explain the broader context in which the project was undertaken. This might include industry trends, academic relevance, or organizational needs.
-Example: "In recent years, the rapid advancement of technology has revolutionized the healthcare industry, making data management systems an essential component for modern hospitals. This project was undertaken to address the growing need for a secure and efficient database system at XYZ Hospital."
+Lung cancer is one of the most prevalent and fatal malignancies worldwide, accounting for a disproportionately high share of cancer-related deaths due to its characteristically late-stage presentation at the time of diagnosis. Early detection remains the most significant determinant of patient survival; however, identifying malignant pulmonary nodules in CT scans demands considerable radiological expertise and is prone to inter-observer variability. The rapid proliferation of artificial intelligence in medical imaging has opened new avenues for automating and augmenting diagnostic workflows, enabling faster, more consistent analysis of complex radiological data. Despite promising advances, most existing AI-based diagnostic systems function as opaque black-box models, producing predictions without interpretable reasoning — a critical barrier to clinical adoption. LungInsight was developed to bridge this gap by building a transparent, multimodal AI framework that combines CT imaging with structured clinical data to deliver both accurate and explainable lung cancer predictions.
+
 \section{Purpose of the Project}
-Clearly state the purpose or objective of the project. This explains why the project was initiated and what it aims to achieve.
-Example: "The primary objective of this project is to develop a database security framework that ensures the confidentiality, integrity, and availability of patient data at XYZ Hospital."
-\section{ Scope of the Project}
-Define the scope of the project. What aspects are included in the project, and what are the boundaries? This helps manage expectations and clarifies what the project will cover.
-Example: "This report focuses on the design and implementation of security measures for the hospital's database system, including encryption, access control, and regular security audits. It does not cover the hospital's overall IT infrastructure."
+The primary objective of LungInsight is to develop a multimodal deep learning system capable of predicting the probability of lung cancer malignancy and classifying disease stage from CT scan images and clinical patient records. The project further aims to integrate Explainable AI techniques — specifically Grad-CAM for imaging and SHAP for clinical features — to ensure that model predictions are interpretable and clinically trustworthy. By delivering a Streamlit-based decision support dashboard, LungInsight seeks to provide clinicians with an accessible, real-time tool to support early diagnosis and evidence-based decision-making.
+
+\section{Scope of the Project}
+This project encompasses the design, development, and evaluation of a multimodal lung cancer prediction pipeline using the LIDC-IDRI CT dataset and the National Lung Screening Trial clinical records. The scope includes CT image preprocessing, clinical data preparation, model architecture design using DenseNet-based and MLP-based encoders with late fusion, explainability integration via Grad-CAM and SHAP, and comprehensive performance evaluation. The project does not extend to real-time integration with hospital information systems, regulatory approval for clinical deployment, or the diagnosis of lung conditions other than malignancy and stage classification.
+
 \section{Significance of the Project}
-Discuss the importance or significance of the project. Explain why the project is important and what impact it is expected to have.
-Example: "With the increasing number of cyber threats targeting healthcare institutions, implementing a robust database security framework is crucial. This project not only enhances the security of sensitive patient data but also helps the hospital comply with regulatory requirements."
-
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\columnwidth, height =9cm]{Chapter1/figures/Precast1.png}
-\caption{Prefabricated Building Systems}% \cite{PBS} }
-\label{PBS}
-\end {figure}
+Lung cancer's high mortality rate is closely linked to the absence of reliable, accessible, and explainable early diagnostic tools, particularly in settings with limited access to specialist radiologists. LungInsight addresses this gap by combining the predictive power of deep learning with the transparency of explainable AI, enabling clinicians to not only receive a diagnosis but also understand the imaging regions and clinical factors driving each prediction. The system has direct implications for SDG 3 (Good Health and Well-being) by improving survival outcomes through early detection, SDG 10 (Reduced Inequalities) by reducing dependence on specialist infrastructure, and SDG 9 (Industry, Innovation and Infrastructure) by advancing intelligent healthcare technology.
 
 \section{System Architecture}
-%Add classification picture here
-Birkeland et.al \cite{birkeland1966connections} classified precast systems into large panel prefabrication systems, frame systems, shear walls, and mixed systems based on load carrying capacity of structures. Prefabrication systems are classified as open prefabrication systems (partial and full prefabrication), large panel prefabrication systems (staircase systems, balconies, precast floors and precast walls), and box type construction according to IS15916:2011\cite{standard15916criteria}, as shown in Figure \ref{PS}.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.7\columnwidth]{Chapter1/figures/PCClass.png}
-\caption{Prefabrication Systems}
-\label{PS}
-\end {figure}
-
+LungInsight adopts a multimodal late-fusion architecture comprising two parallel encoding branches. The imaging branch employs a DenseNet-based convolutional neural network pretrained for grayscale CT slice analysis to extract spatial features from pulmonary nodule regions. The clinical branch uses a fully connected multi-layer perceptron to encode tabular patient data — including age, sex, smoking history, emphysema score, and lung function — into a dense embedding. The outputs of both branches are concatenated and passed through fusion dense layers to produce a final malignancy probability and stage classification. Explainability is overlaid through Grad-CAM heatmaps on CT slices and SHAP value attribution on clinical features. The complete inference pipeline is exposed via a Streamlit dashboard for clinical use.
 
 \section{Problem Statement}
-The large panel system is made up of vertical and horizontally connected wall and floor concrete panels that enclose adequate spaces in a construction.
-When horizontal floor/roof panels are properly connected, they function as diaphragms, transferring lateral loads to vertical elements. Wall panels are typically one storey high, with one-way or two-way slabs for floors and roofs.
- Figure \ref{LP} \cite{LPS} illustrates large wall panel systems.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.7\columnwidth, height =5cm]{Chapter1/figures/LPS.png}
-\caption{Large Panel Systems} %\cite{LPS}}
-\label{LP}
-\end {figure}
-
-
-
-
+Early-stage lung tumours are characteristically small and difficult to distinguish from benign nodules in CT scans, making manual diagnosis both time-intensive and susceptible to error. Existing AI diagnostic models, while achieving high classification accuracy, largely fail to provide interpretable reasoning for their predictions — making it difficult for clinicians to validate or trust AI-generated outputs. Furthermore, most systems rely solely on imaging data, disregarding the wealth of diagnostic signal present in structured clinical records. LungInsight addresses these limitations by proposing a unified, explainable, and multimodal prediction framework that is both clinically accurate and transparent.
 
 \section{Objectives}
-Frame systems are structures with beams, columns, and slabs that can withstand both lateral and gravity loads, and they are widely used to overcome large moments produced by loading. As shown in Figure \ref{FS} \cite{FS}, frame systems are either rigid or braced, using linear or beam column components as part of the assembly.
-
-
+\begin{enumerate}
+    \item Develop a multimodal lung cancer prediction model using a DenseNet-based CT image encoder and an MLP-based clinical feature encoder with late fusion, to jointly predict malignancy probability and disease stage.
+    \item Integrate Explainable AI techniques — Grad-CAM for CT image localisation and SHAP for clinical feature attribution — to produce interpretable, patient-specific diagnostic explanations.
+    \item Evaluate the framework comprehensively using accuracy, ROC-AUC, F1-score, PR-AUC, Brier score, calibration curves, and decision curve analysis, with ablation studies across imaging-only, clinical-only, and fused model configurations.
+    \item Deploy a Streamlit-based clinical decision support dashboard enabling clinicians to upload CT scans and patient records, run inference, and review explainable risk assessments in real time.
+\end{enumerate}
 
 \section{Applications}
+LungInsight has broad applicability across clinical and research settings. In hospital radiology departments, it can serve as a second-opinion tool, flagging high-risk CT scans for priority review. In under-resourced or rural healthcare settings where specialist radiologists are scarce, the system can extend diagnostic capability to general practitioners through its intuitive dashboard interface. The SHAP-based clinical explainability module is additionally valuable for oncology research, enabling identification of the most diagnostically significant patient-level risk factors. The framework's modular architecture also allows adaptation to other thoracic malignancies or imaging modalities with minimal modification.
 
-The most critical research issue that concerns the precast industry is the development of a reliable and cost-effective technique for connecting prefabricated parts. The weak points in a prefabricated structural system are the locations of high stresses. Connection handling should be accomplished with the minimum amount of joint members possible, with the best possible transmissibility of existing forces and minimum secondary forces. According to the force transmission at the junction of structural components, joints are classified as compression joints, tensile joints, shear joints, flexure and torsional joints.
-
-
-\section{ Structure of the Report}
-Briefly outline the structure of the report. This gives readers a roadmap of what to expect in the following sections.
-Example: "This report is organized as follows: Section 2 provides a literature review of current database security practices; Section 3 outlines the methodology used in the project; Section 4 discusses the implementation details; Section 5 presents the results and analysis; and Section 6 offers conclusions and recommendations."
-
+\section{Structure of the Report}
+This report is organised as follows: Chapter 2 presents an extended literature review of AI-based lung cancer detection methods, summarising key algorithms, datasets, results, and identified research gaps; Chapter 3 details the proposed methodology, including data acquisition, preprocessing pipelines, model architecture, training protocol, and explainability implementation; Chapter 4 describes the experimental setup and implementation environment; Chapter 5 presents the results and quantitative evaluation of the LungInsight framework; and Chapter 6 offers conclusions and directions for future work.
 
 \begin{table}[H]
 \centering
 \captionsetup{justification=centering}
-\caption{Thesis Organization \&  Published and Submitted Papers}
-%\resizebox{\textwidth}{!}{ 
-\begin{tabular}{clcc}
+\caption{Report Organisation}
+\begin{tabular}{clc}
 \toprule
-\textbf {Chapter}  & \textbf{Content}  & \textbf{Objective} & \textbf{Paper}  \\ 
-\textbf { No.} & & &\\
+\textbf{Chapter No.} & \textbf{Content} & \textbf{Objective} \\
 \midrule
-1 & Introduction &  &  I\\
+1 & Introduction & — \\
 \hline
-%3 & Objectives& \\
-%\hline
-2 & Comparative Study of Prefabricated \\
-& \& RC Multistoreyed residential building & 1 &  II\\
+2 & Literature Review of AI-Based Lung Cancer Detection & 1 \\
 \hline
-3  & Performance Evaluation of Precast\\
-& Prestressed  Hollow Core Slabs & 2 &  III \&  IV\\
+3 & Proposed Methodology: Multimodal Fusion \& XAI Pipeline & 1, 2 \\
 \hline
-4  & Reliability Analysis of Precast \\
-& Prestressed Hollow Core Slabs & 2 &  V\\
+4 & Implementation \& Experimental Setup & 3 \\
 \hline
-5  & AMPLE: An Approximate Modelling \\
-& of Panel Link Elements & 3 &   VI \& VII\\
+5 & Results \& Evaluation & 3 \\
 \hline
-6  & Reliability Analysis for Bond Strength\\
-& of Precast Panel Joints& 4&  VIII\\
-\hline
-7 & Conclusions & & \\
+6 & Conclusion \& Future Work & 4 \\
 \bottomrule
 \end{tabular}
-\label{ContentL}
+\label{ReportOrg}
 \end{table}
 
-  
-\textbf {Chapter 7 Conclusion} concludes the thesis by summarizing the results and future scope of research.
-
-
-
-
-
-
-
+\textbf{Chapter 6 Conclusion} summarises the key findings of the LungInsight project, reflects on the effectiveness of the multimodal explainable AI approach for lung cancer diagnosis, and outlines directions for future research including multi-centre validation, integration with electronic health records, and extension to three-dimensional CT volume analysis.

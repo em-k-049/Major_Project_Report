@@ -1,88 +1,155 @@
-\chapter{Design Methodology} %chapter head
+\chapter{Design Methodology}
 \graphicspath{{Chapter3/figures/}}
 {\setstretch{1.5}
+
 %--------------------------------------------------------------------------------------
-he "Design Methodology" section of your  project report is crucial as it outlines the approach you used to achieve your project's objectives. It details the processes, techniques, and tools employed, providing a clear roadmap of how your project was designed and implemented. Here’s a guide to help you write this section effectively:
 
- \section{Introduction to the Design Methodology}
-Start by briefly introducing the overall approach you adopted for your project. This could be a specific design model, framework, or methodology (e.g., Waterfall, Agile, V-Model, etc.). Mention why this particular methodology was chosen and how it aligns with the project's goals.
-Example: "The design methodology for this project was based on the Agile model, which allows for iterative development and continuous feedback. This approach was selected to accommodate the evolving requirements of the database security framework and to ensure that the final product meets the user's needs effectively."
+\section{Introduction}
 
-\section{ Project Requirements}
-Discuss the initial requirements gathering phase. Describe how you identified the needs and objectives of the project, including any requirements from stakeholders, users, or clients.
+The design methodology for \textit{LungInsight} is grounded in an iterative, modular development approach that mirrors the incremental refinement typical of applied deep learning research. Given the clinical sensitivity of the problem---early-stage lung cancer detection from computed tomography (CT) scans and structured patient records---the framework was architected to prioritise prediction accuracy, model explainability, and clinical deployability in equal measure. Each phase of the pipeline, from raw data ingestion through multimodal fusion to interactive clinical decision support, was designed and validated independently before integration, ensuring that failures could be localised and corrected without cascading impact on the broader system.
 
-Example: "The initial phase involved a comprehensive requirement analysis, where key stakeholders were interviewed to gather functional and non-functional requirements. This included security features such as data encryption, access control, and real-time monitoring, which were critical for the project's success."
+This methodology was selected over a purely waterfall approach because the problem formulation itself evolved during the literature survey phase. Insights drawn from ten surveyed works---spanning custom convolutional architectures, curriculum learning, multimodal foundation models, and hybrid CNN--ANN frameworks---revealed that no single prior approach simultaneously addressed the three identified gaps: multimodal fusion of CT imaging with structured clinical data, quantitative explainability of both imaging and tabular predictions, and comprehensive clinical-grade evaluation. Consequently, the development process required iterative scope refinement guided by emerging domain knowledge.
+
+%--------------------------------------------------------------------------------------
+
+\section{Project Requirements}
+
+\subsection{Functional Requirements}
+
+The functional requirements of LungInsight were identified through a combination of structured literature analysis and clinical validation. The literature survey (Entries 1--15 in the extended review) consistently flagged the absence of integrated multimodal pipelines and interpretable outputs as the principal gaps in existing work. A pre-project consultation with a clinical oncologist further confirmed that explainability is not merely a research aspiration but a practical prerequisite for physician adoption of AI-assisted diagnosis tools.
+
+The resulting functional requirements are as follows.
+
+\begin{enumerate}
+    \item \textbf{Multimodal Input Support:} The system must accept both CT imaging volumes (DICOM/NIfTI) and structured clinical feature vectors (age, sex, smoking history, emphysema score, lung function, family history) as inputs.
+    \item \textbf{Malignancy Probability Estimation:} The model must output a continuous malignancy probability score for each input case, enabling risk stratification.
+    \item \textbf{Disease Stage Prediction:} Beyond binary classification, the system must predict the stage of lung cancer to support treatment planning decisions.
+    \item \textbf{Imaging Explainability:} The system must generate Gradient-weighted Class Activation Mapping (Grad-CAM) heatmaps localising suspicious regions within CT slices.
+    \item \textbf{Clinical Feature Explainability:} The system must compute SHAP (SHapley Additive exPlanations) values to quantify the contribution of each clinical variable to the prediction, both globally and at the individual patient level.
+    \item \textbf{Interactive Clinical Interface:} A web-based dashboard must allow clinicians to upload CT scans and clinical data, trigger inference, and view risk scores, heatmaps, and SHAP plots without requiring programmatic interaction.
+\end{enumerate}
+
+\subsection{Non-Functional Requirements}
+
+\begin{itemize}
+    \item \textbf{Reproducibility:} All dataset splits, preprocessing steps, random seeds, and hyperparameters must be logged to enable independent replication of results.
+    \item \textbf{Calibration:} Model confidence scores must be calibrated such that a predicted probability of $p$ reflects a true empirical frequency of $p$ across the test population.
+    \item \textbf{Interpretability for Non-Experts:} Explanations must be rendered in a form accessible to clinical users who are not specialists in machine learning.
+    \item \textbf{Modularity:} Each sub-component (imaging encoder, clinical encoder, fusion head, explainability module, dashboard) must be independently replaceable or upgradeable.
+\end{itemize}
+
+%--------------------------------------------------------------------------------------
 
 \section{System Architecture}
-Present the high-level architecture of the system. Include diagrams if possible (e.g., system architecture diagram, flowcharts) to visually represent the design. Explain the different components or modules of the system and how they interact.
 
-Example: "The system architecture consists of three main layers: the presentation layer, the application layer, and the data layer. The presentation layer handles user interactions, the application layer processes data and implements security protocols, and the data layer manages the secure storage and retrieval of information."
+The high-level architecture of LungInsight is organised into four layers: the \textit{data layer}, the \textit{modelling layer}, the \textit{explainability layer}, and the \textit{presentation layer}.
 
-\section{ Detailed Design}
-Go deeper into the design of individual components or modules. For each component, describe:
+The \textbf{data layer} handles acquisition, standardisation, and preprocessing of both the LIDC-IDRI CT corpus and the National Lung Screening Trial (NLST) clinical dataset. Patient-level alignment between the two sources produces coherent multimodal training instances. Preprocessing sub-modules for imaging (lung windowing, axial slicing, augmentation) and clinical data (imputation, categorical encoding, feature scaling) operate independently and feed into a unified data loader.
 
-Purpose: What is the role of this component in the system?
+The \textbf{modelling layer} implements a late-fusion multimodal architecture. An imaging branch, based on a DenseNet backbone adapted for single-channel (grayscale) CT slices, extracts high-dimensional spatial feature representations. A parallel clinical branch, implemented as a Multi-Layer Perceptron (MLP), encodes structured tabular inputs into dense embeddings. A fusion head concatenates both representations and passes them through fully connected layers to produce a scalar malignancy probability and a stage classification logit.
 
-Inputs and Outputs: What inputs does it take, and what outputs does it produce?
+The \textbf{explainability layer} operates post-inference. Grad-CAM hooks attached to the final convolutional block of the imaging branch generate spatial attention heatmaps. SHAP TreeExplainer (or KernelExplainer for the MLP branch) computes additive feature attributions for the clinical inputs.
 
-Process: How does the component achieve its purpose? What algorithms, protocols, or tools are used?
+The \textbf{presentation layer} is a Streamlit-based dashboard that provides an end-to-end interactive interface, integrating file upload, model inference, heatmap rendering, SHAP waterfall plots, and a clinician-facing risk summary.
 
-Example: "The encryption module is responsible for securing data at rest. It uses AES-256 encryption, which is implemented through the OpenSSL library. Data is encrypted before storage and decrypted upon retrieval, ensuring that unauthorized access is prevented."
+%--------------------------------------------------------------------------------------
 
+\section{Detailed Design}
+
+\subsection{Data Acquisition and Integration}
+
+Two primary data sources are employed. The \textbf{LIDC-IDRI} dataset provides thoracic CT cases with expert-consensus annotations for lung nodule localisation and malignancy ratings (scored 1--5 by up to four radiologists). The \textbf{NLST Clinical Dataset} contributes longitudinal participant records encompassing demographic attributes (age, sex), behavioural risk factors (pack-year smoking history), physiological measurements (emphysema score, lung function indices), family history of lung cancer, and ground-truth diagnostic outcomes.
+
+Integration proceeds via patient-level matching on shared demographic identifiers, producing multimodal tuples of the form $\langle\text{CT volume}, \text{clinical vector}, \text{label}\rangle$. The final cohort is partitioned into training, validation, and test splits with strict no-patient-overlap constraints to prevent data leakage.
+
+\subsection{Data Preprocessing Pipeline}
+
+\textbf{CT Imaging:} Raw DICOM files are converted to a standardised volumetric format. Lung windowing (window level: $-600$\,HU; window width: $1500$\,HU) normalises the Hounsfield Unit range to the clinically relevant interval. Nodule-centred crops of fixed spatial extent are extracted, resampled to a uniform voxel spacing, and sliced axially. Online augmentation during training applies random rotations, horizontal flips, and brightness jitter to improve generalisation.
+
+\textbf{Clinical Data:} Continuous features (age, pack-years, lung function metrics) are standardised to zero mean and unit variance. Categorical features (sex, family history, emphysema grade) are one-hot encoded. Missing values are imputed using median substitution for continuous variables and mode substitution for categoricals. The resulting fixed-length vector serves as the input to the clinical branch.
+
+\subsection{Model Architecture}
+
+\textbf{Imaging Branch:} A pretrained DenseNet (adapted for single-channel input by replicating the first convolutional layer weights across the channel dimension) processes axial CT slices and outputs a spatial feature map. Global average pooling collapses this map into a 1-D embedding vector, $\mathbf{f}_{\text{img}} \in \mathbb{R}^{d_{\text{img}}}$.
+
+\textbf{Clinical Branch:} The clinical feature vector passes through a three-layer MLP with batch normalisation and dropout regularisation at each hidden layer, producing an embedding $\mathbf{f}_{\text{clin}} \in \mathbb{R}^{d_{\text{clin}}}$.
+
+\textbf{Fusion Head:} The two embeddings are concatenated, $\mathbf{f}_{\text{fused}} = [\mathbf{f}_{\text{img}} \| \mathbf{f}_{\text{clin}}]$, and passed through two fully connected layers with ReLU activations. The final layer produces a scalar malignancy probability via a sigmoid activation and a multi-class stage logit via a softmax activation.
+
+\subsection{Training Protocol}
+
+Training uses the AdamW optimiser with a cosine annealing learning rate schedule, initialised at $1 \times 10^{-4}$. To address the class imbalance inherent in medical imaging datasets (where benign cases substantially outnumber malignant ones), the loss function combines binary cross-entropy with focal loss, modulated by an inverse class frequency weighting scheme. Early stopping on validation Area Under the Receiver Operating Characteristic Curve (ROC-AUC) prevents overfitting. Mini-batches of CT--clinical pairs are sampled with balanced class proportions.
+
+\subsection{Explainability Implementation}
+
+\textbf{Grad-CAM (Imaging):} Forward and backward pass hooks are registered on the terminal dense block of the DenseNet imaging encoder. The gradient of the predicted class score with respect to the final convolutional feature map is globally average-pooled to yield neuron importance weights. A weighted combination of the feature maps, passed through a ReLU non-linearity, produces a coarse localisation heatmap that is bilinearly upsampled to the input CT slice resolution and overlaid as a colour-coded activation map.
+
+\textbf{SHAP Values (Clinical and Fusion):} For the clinical MLP branch, KernelSHAP approximates Shapley values by sampling a background reference distribution from the training set. SHAP values are computed for each clinical feature at inference time, producing both a global feature importance ranking (mean absolute SHAP across the test cohort) and a patient-specific waterfall plot showing the signed contribution of each clinical variable to the individual prediction.
+
+%--------------------------------------------------------------------------------------
 
 \section{Tools and Technologies}
-List the tools, programming languages, frameworks, and technologies used in the project. Briefly explain why each was chosen and how it contributed to the project.
 
-Example: "Python was selected as the primary programming language due to its extensive libraries for data security, including PyCrypto. PostgreSQL was chosen as the database management system for its robust security features and support for encryption."
+\begin{itemize}
+    \item \textbf{Python 3.11} serves as the primary development language, selected for its rich ecosystem of scientific computing and deep learning libraries.
+    \item \textbf{PyTorch} provides the deep learning framework for model definition, training loops, and gradient computation, including the hooks required for Grad-CAM.
+    \item \textbf{TorchVision} supplies pretrained DenseNet and ResNet weights and standard image transformation utilities.
+    \item \textbf{scikit-learn} supports preprocessing pipelines, calibration analysis (Platt scaling, isotonic regression), and evaluation metric computation.
+    \item \textbf{SHAP} (Lundberg \& Lee) implements the KernelSHAP and DeepSHAP explainability methods for clinical and fusion branches.
+    \item \textbf{SimpleITK / pydicom} handle DICOM and NIfTI image I/O and volumetric resampling.
+    \item \textbf{Streamlit} powers the interactive clinical decision support dashboard, enabling browser-based inference and explanation rendering without server-side infrastructure beyond a Python process.
+    \item \textbf{Matplotlib / Plotly} generate static and interactive visualisations for Grad-CAM overlays, SHAP plots, calibration curves, and ROC curves.
+    \item \textbf{Weights \& Biases (W\&B)} tracks all experiment configurations, training metrics, and model artefacts to ensure full reproducibility.
+\end{itemize}
 
-\section{ Development Process}
-Describe the development process, including any phases or iterations. If applicable, mention how testing and validation were integrated into the development cycle.
+%--------------------------------------------------------------------------------------
 
-Example: "The development was carried out in sprints, each lasting two weeks. At the end of each sprint, the developed features were tested using unit tests and integrated into the main system. Feedback from these tests was used to refine subsequent development."
+\section{Development Process}
 
- \section{Testing and Validation}
-Discuss the testing strategies employed to ensure the design met the project’s objectives. Mention different types of testing (e.g., unit testing, integration testing, user acceptance testing) and how they were conducted.
-Example: "The system underwent rigorous testing, starting with unit tests to validate individual components, followed by integration tests to ensure all modules worked together seamlessly. Finally, user acceptance testing was conducted with a sample of end-users to verify the system’s usability and security."
+Development was organised into four sequential phases, each culminating in a milestone review against the project schedule.
+
+\textbf{Phase 1 -- Foundation (Milestones M1--M3):} Literature survey, clinical consultation, problem formalisation, and dataset procurement. The extended literature review of fifteen works established the gap space and directly informed the functional requirements. The consultation with Dr.\ Bindu (oncologist) validated the clinical relevance of a CT-plus-clinical multimodal approach and calibrated the scope of explainability outputs expected in a clinical workflow.
+
+\textbf{Phase 2 -- Design and Architecture (Milestones M3--M4):} Detailed system design, dataset preprocessing pipeline implementation, and baseline unimodal model development (imaging-only and clinical-only branches trained independently). Ablation results from this phase informed the fusion architecture decisions.
+
+\textbf{Phase 3 -- Integration and Explainability (Milestones M4--M6):} Late-fusion model training, Grad-CAM and SHAP integration, and dashboard development. Unit tests validated individual components; integration tests verified end-to-end inference pipelines.
+
+\textbf{Phase 4 -- Evaluation and Documentation (Milestones M7--M9):} Comprehensive evaluation, ablation studies, calibration analysis, and final report preparation.
+
+%--------------------------------------------------------------------------------------
+
+\section{Testing and Validation}
+
+The evaluation framework was designed to assess both \textit{predictive performance} and \textit{clinical reliability}.
+
+\textbf{Predictive Performance Metrics:} Classification accuracy, sensitivity (recall), specificity, F1-score, ROC-AUC, and Precision-Recall AUC (PR-AUC) are computed on the held-out test set. ROC-AUC and PR-AUC are prioritised over accuracy given the class imbalance in the underlying dataset.
+
+\textbf{Clinical Reliability Metrics:} The Brier score quantifies probabilistic forecast accuracy. Calibration curves (reliability diagrams) and Expected Calibration Error (ECE) assess whether predicted probabilities are well-calibrated against empirical outcomes. Decision Curve Analysis (DCA) evaluates net clinical benefit across a range of treatment threshold probabilities, providing a direct measure of the model's utility in clinical decision-making.
+
+\textbf{Ablation Studies:} Three model variants---imaging-only, clinical-only, and multimodal-fused---are evaluated under identical conditions to quantify the incremental contribution of each modality.
+
+\textbf{Cross-Validation:} Stratified $k$-fold cross-validation is applied to the training set to assess variance in model performance and reduce sensitivity to the specific training--validation split.
+
+%--------------------------------------------------------------------------------------
 
 \section{Challenges and Solutions}
-Identify any challenges or obstacles encountered during the design process and how they were overcome. This shows problem-solving skills and adaptability.
 
-Example: "One of the major challenges was integrating the encryption module without compromising system performance. To address this, the encryption process was optimized by implementing batch processing for bulk data operations, significantly improving efficiency."
+\textbf{Challenge 1 -- Dataset Alignment:} LIDC-IDRI and NLST are independently collected cohorts without direct patient-level linkage. Constructing valid multimodal training pairs required careful demographic matching, which introduced the risk of confounding.
+\textit{Solution:} A probabilistic matching strategy based on age, sex, and smoking category was implemented, and matched pairs were reviewed for demographic consistency before inclusion.
 
-\section{ Conclusion of the Design Methodology}
-Summarize the design methodology and its effectiveness in meeting the project’s objectives. Reflect on how the chosen methodology contributed to the success of the project.
-Example: "The Agile methodology proved highly effective in managing the evolving requirements of the project, allowing for continuous improvement and adaptation. The systematic approach to design and development ensured that all project objectives were met within the stipulated timeframe."
+\textbf{Challenge 2 -- Class Imbalance:} The ratio of malignant to benign cases in the combined dataset is heavily skewed toward benign, risking a model that achieves high accuracy by trivially predicting the majority class.
+\textit{Solution:} Focal loss with inverse class-frequency weighting was adopted during training, and PR-AUC (which is insensitive to true negatives) was used as the primary validation criterion.
 
-\section{Example of a Design Methodology Section:}
+\textbf{Challenge 3 -- Explainability Fidelity:} Grad-CAM heatmaps generated from intermediate convolutional layers can be spatially imprecise, highlighting large regions rather than specific nodules.
+\textit{Solution:} Heatmaps are anchored to the final dense block of the DenseNet encoder to maximise spatial specificity, and threshold-based segmentation masks are overlaid on the original CT slice to delineate the predicted suspicious region.
 
-The design methodology for this project was based on the Agile model, which allows for iterative development and continuous feedback. This approach was selected to accommodate the evolving requirements of the database security framework and to ensure that the final product meets the user's needs effectively.
+\textbf{Challenge 4 -- Integration of Heterogeneous Modalities:} Naively concatenating raw CT feature maps with clinical vectors introduces scale disparities and can cause one modality to dominate the fusion head.
+\textit{Solution:} Both branches independently learn compressed embeddings of equal dimensionality before concatenation, and the clinical branch incorporates batch normalisation to align its output distribution with that of the imaging branch.
 
-\subsection{Project Requirements}
-The initial phase involved a comprehensive requirement analysis, where key stakeholders were interviewed to gather functional and non-functional requirements. This included security features such as data encryption, access control, and real-time monitoring, which were critical for the project's success.
+%--------------------------------------------------------------------------------------
 
-\subsection{ System Architecture}
-The system architecture consists of three main layers: the presentation layer, the application layer, and the data layer. The presentation layer handles user interactions, the application layer processes data and implements security protocols, and the data layer manages the secure storage and retrieval of information. (Include a diagram here if possible.)
+\section{Conclusion}
 
-\subsection{Detailed Design}
-The encryption module is responsible for securing data at rest. It uses AES-256 encryption, which is implemented through the OpenSSL library. Data is encrypted before storage and decrypted upon retrieval, ensuring that unauthorized access is prevented. Similarly, the access control module enforces role-based permissions to ensure that only authorized users can access sensitive data.
-
-\subsection{Tools and Technologies}
-Python was selected as the primary programming language due to its extensive libraries for data security, including PyCrypto. PostgreSQL was chosen as the database management system for its robust security features and support for encryption. Other tools include Docker for containerization and Jenkins for continuous integration.
-
-\subsection{Development Process}
-The development was carried out in sprints, each lasting two weeks. At the end of each sprint, the developed features were tested using unit tests and integrated into the main system. Feedback from these tests was used to refine subsequent development.
-
-\subsection{Testing and Validation}
-The system underwent rigorous testing, starting with unit tests to validate individual components, followed by integration tests to ensure all modules worked together seamlessly. Finally, user acceptance testing was conducted with a sample of end-users to verify the system’s usability and security.
-
-\subsection{Challenges and Solutions}
-One of the major challenges was integrating the encryption module without compromising system performance. To address this, the encryption process was optimized by implementing batch processing for bulk data operations, significantly improving efficiency.
-
-\subsection{Conclusion}
-The Agile methodology proved highly effective in managing the evolving requirements of the project, allowing for continuous improvement and adaptation. The systematic approach to design and development ensured that all project objectives were met within the stipulated timeframe.
-
-This structure ensures that your design methodology is comprehensive, clear, and logically presented, making it easier for readers to understand how you approached the design and development of your project.
-
-
+The design methodology for LungInsight translates the three primary gaps identified in the literature---multimodal integration, quantitative explainability, and clinical-grade evaluation---into concrete architectural decisions and a structured development process. The modular, late-fusion pipeline preserves the individual strengths of CT imaging analysis and structured clinical data processing while enabling their joint contribution to malignancy prediction. The dual explainability strategy (Grad-CAM for imaging, SHAP for clinical features) ensures that model outputs are interpretable at both the spatial and the feature-attribution levels, addressing the trust deficit that has historically limited clinical adoption of black-box AI systems. Comprehensive evaluation against calibration and decision curve metrics, beyond standard classification scores, ensures that LungInsight's outputs are clinically actionable rather than merely statistically impressive.
 
 }

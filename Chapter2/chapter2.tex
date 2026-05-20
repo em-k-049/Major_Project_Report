@@ -1,46 +1,176 @@
-\chapter{Literature Review}\thispagestyle{empty} %chapter head
+\chapter{Literature Review}\thispagestyle{empty}
 \graphicspath{{Chapter2/figures/}}
-{ \setstretch{1.5}
-%--------------------------------------------------------------------------------------
-The "Related Work" section of a project report is where you review and discuss existing research, projects, or methodologies that are relevant to your work. This section helps to contextualize your project within the broader field, demonstrating how it builds upon or differs from what has already been done.
+{\setstretch{1.5}
 
-\section{Steps to Write the Related Work Section:}
-\subsection{Identify Relevant Work:}
+The application of artificial intelligence to lung cancer detection and diagnosis has grown
+substantially in recent years, driven by the clinical urgency of early detection and the
+availability of large annotated CT imaging datasets. This chapter reviews fifteen relevant
+works spanning CT-based deep learning, explainable AI, multimodal fusion, and pulmonary
+nodule detection, organised thematically to contextualise the design decisions underlying
+LungInsight.
 
-Begin by identifying and selecting previous research papers, articles, projects, or methodologies that are relevant to your project. These can include academic papers, industry reports, books, or even well-known software or systems related to your topic.
-\subsection{Organize the Literature:}
+%-----------------------------------------------------------------------
+\section{CNN-Based Detection from CT Imaging}
 
-Group the related work into categories based on themes, methodologies, or approaches. This helps in creating a structured and coherent discussion. For example, you could categorize them by different approaches to solving a similar problem, by technology used, or by chronological development.
-\subsection{Summarize and Compare:}
+The most extensively explored paradigm in lung cancer AI involves training convolutional
+neural networks directly on CT scan images. Hammad et al. \cite{hammad2025} proposed a
+custom CNN augmented with Grad-CAM explainability for lung cancer detection from CT
+images, achieving a classification accuracy of approximately 95\% with visual
+localisation of tumour regions. While the model demonstrated strong discriminative
+performance, it was trained on a single dataset and showed limited generalisability
+across different scanner types and patient populations, with no integration into clinical
+workflows or longitudinal outcome tracking.
 
-Summarize the key points of each piece of related work. Highlight the objectives, methods, findings, and limitations of each.
-Compare and contrast these works with your project. Discuss how your project is similar to or different from these studies or systems. Explain how your work builds on, extends, or deviates from existing work.
-\subsection{Highlight the Gaps:}
+Murthy et al. \cite{murthy2025} pursued a real-time diagnostic objective through an
+optimised CNN architecture, achieving fast inference suitable for clinical deployment.
+However, the study did not report standardised performance metrics or compare results
+against radiologist baselines, making reproducibility and clinical benchmarking
+difficult. Similarly, Prathima et al. \cite{prathima2025} conducted a comprehensive
+comparative study of CNN and ensemble deep learning models on CT scans, reporting
+accuracies in the range of 93--97\% with balanced sensitivity and specificity. Despite
+the robustness of the comparative design, the study's high computational cost and
+absence of early-stage focus limit its practical clinical applicability.
 
-Identify gaps or limitations in the existing work that your project aims to address. This justifies the need for your project and positions it as a valuable contribution to the field.
-\subsection{Cite Appropriately:}
+Achyutha Sree et al. \cite{achyuthasree2025} proposed a multi-objective deep learning
+pipeline on the LIDC-IDRI low-dose CT dataset, achieving accuracies above 90\% with
+improved PSNR and SSIM metrics and reduced false positives. The work highlighted real-time
+feasibility challenges and limited dataset diversity as key barriers to deployment.
+Gondkar et al. \cite{gondkar2024} introduced a hybrid CNN-GRU architecture combining
+spatial and sequential learning on CT scans, reporting accuracies of 92--95\%. However,
+the use of GRU layers for inherently static image data was identified as architecturally
+redundant, and the small dataset size constrained the generalisability of results.
 
-Ensure you cite all the related work correctly using the appropriate citation style (APA, MLA, IEEE, etc.) as per the guidelines of your report.
+%-----------------------------------------------------------------------
+\section{Explainable AI in Lung Cancer Diagnosis}
 
-\section{Example of a Related Work Section:}
+Recognising that black-box predictions are insufficient for clinical trust, several
+works have incorporated explainability into their diagnostic pipelines.
+Alqahtani et al. \cite{alqahtani2025} applied the EfficientNet architecture with
+Grad-CAM visualisation for automated lung cancer stage classification, achieving
+accurate stage prediction accompanied by interpretable heatmaps. The model was,
+however, restricted to three output classes (normal, malignant, benign), with
+insufficient handling of early-stage or rare subtypes and no evaluation of multimodal
+data fusion.
 
-The field of database security has been extensively studied, with various approaches proposed to safeguard sensitive data. Smith et al. (2015) developed an encryption-based approach to securing databases, which focuses on encrypting data at rest using AES encryption. While this method effectively protects data stored on disk, it has performance drawbacks, particularly in high-transaction environments, as identified by Johnson and Lee (2018), who proposed a hybrid encryption model that balances security and performance.
+Bouamrane et al. \cite{bouamrane2024} addressed model robustness by combining curriculum
+learning, deep CNNs, and explainable AI across multiple CT datasets, demonstrating
+improved cross-dataset performance and generalisation. The approach remained limited to
+CT imaging alone, with scalability challenged by heterogeneous preprocessing requirements
+and no assessment of false-positive rates across diverse demographic groups.
 
-Another significant contribution is the role-based access control (RBAC) model discussed by Kumar and Patel (2016), which ensures that users only have access to the data necessary for their roles. This approach has been widely adopted in enterprise environments due to its scalability and ease of management. However, Martinez and Gupta (2019) pointed out that RBAC can become complex to manage in dynamic organizations where roles frequently change.
+Zheng et al. \cite{zheng2021} presented an interpretable computer-aided diagnosis system
+integrating radiology images with clinical data for malignancy evaluation, with a clear
+emphasis on clinical usability. While interpretability was central to the design, the
+work predates current foundation model developments, relies on a single dataset, and does
+not account for comorbidities or three-dimensional CT dynamics.
 
-Recent work by Liu et al. (2020) introduced a machine learning-based anomaly detection system to identify potential security breaches in real-time. Their system shows promise in detecting unusual database activities but requires significant computational resources, which may not be feasible for smaller organizations.
+Chaudhari and Gudadhe \cite{chaudhari2025} conducted a survey of AI methods applied to
+lung cancer diagnosis and treatment, providing a broad overview of machine learning and
+deep learning trends in the domain. The work was, however, non-experimental in nature,
+offering no quantitative benchmarking and no guidance on deployment in low-resource
+settings — a gap the authors themselves identified as needing urgent attention.
 
-Despite these advancements, there remains a gap in providing a comprehensive security framework that integrates encryption, access control, and real-time monitoring in a lightweight, efficient manner suitable for medium-sized healthcare institutions. This project addresses this gap by developing an integrated security framework tailored for XYZ Hospital's database system, combining encryption, role-based access control, and a streamlined anomaly detection mechanism.
+%-----------------------------------------------------------------------
+\section{Multimodal Fusion Approaches}
 
-\section{Tips for Writing the Related Work Section:}
-\begin{enumerate}
-	\item Be Concise: Avoid lengthy descriptions. Focus on summarizing the most relevant aspects of each work.
-\item Stay Focused: Only include work that directly relates to your project. Irrelevant details can dilute the effectiveness of this section.
-\item Be Critical: Don't just describe existing work; analyze it. Highlight strengths, weaknesses, and areas where your work differs.
-\item Use Clear Transitions: Clearly indicate how each piece of related work connects to the next, and how they collectively relate to your project.
+A growing body of work has sought to move beyond single-modality imaging by incorporating
+structured clinical data alongside CT scans. Oncu and Ciftci \cite{oncu2025} proposed a
+multimodal AI framework integrating CNN-extracted image features with ANN-processed
+clinical data, demonstrating improved diagnostic accuracy over imaging-only baselines.
+The study did not specify the datasets used or validation metrics applied, and gaps in
+clinical data standardisation and handling of missing modalities remain unresolved.
 
-\end{enumerate}
-By following these steps and tips, you can craft a well-organized and insightful "Related Work" section that effectively situates your project within the broader context of the field.
- 
-%--------------------------------------------------------------------------------------
+Yamada et al. \cite{yamada2024} explored multimodal deep learning by combining low-dose
+CT scans with structured clinical information for the diagnosis of mediastinal tumours,
+demonstrating the radiation-reducing benefit of low-dose imaging. The work was limited
+to mediastinal rather than primary lung parenchymal pathology, and the small preliminary
+cohort introduced bias risks with no long-term outcome data.
+
+Niu et al. \cite{niu2025} introduced a medical multimodal multitask foundation model for
+lung cancer screening that handles both imaging and clinical data at scale. While the
+architecture demonstrated strong performance across multiple screening tasks, the model
+remained focused on screening rather than staging or treatment recommendation, and its
+dependency on high-quality annotations constrained applicability in under-resourced
+settings. Interpretability for non-expert clinical users was also identified as a
+significant limitation.
+
+%-----------------------------------------------------------------------
+\section{Pulmonary Nodule Detection}
+
+Nodule-level detection forms a foundational component of any lung cancer diagnostic
+pipeline. Salhi et al. \cite{salhi2026} applied AI-based detection and classification
+models to the widely used LIDC-IDRI CT dataset, achieving improved pulmonary nodule
+detection accuracy. The study relied on legacy LIDC-IDRI annotations without
+incorporating more recent expert consensus annotations, and did not address nodule
+malignancy risk scoring, which is clinically essential for treatment decisions.
+
+Koyyada et al. \cite{koyyada2023} proposed a CNN combined with object detection for
+nodule identification in chest X-rays rather than CT scans, reporting accuracy in the
+range of 85--90\% with IoU-based localisation metrics. While the approach offers a
+low-cost, accessible alternative to CT-based methods, X-ray modality inherently limits
+sensitivity for small nodules and introduces higher false-negative rates compared to CT
+imaging.
+
+%-----------------------------------------------------------------------
+\section{Survey of NSCLC Detection Methods}
+
+Pawar et al. \cite{pawar2025} reviewed multiple datasets and AI methods applied to
+non-small cell lung cancer detection, reporting accuracy figures up to 97\% across
+surveyed studies. As a review paper without experimental validation, the work provided
+broad directional insights but lacked deployment guidance and real-time applicability
+discussion — consistent with the broader pattern of a field rich in benchmarked models
+but sparse in clinically deployed systems.
+
+%-----------------------------------------------------------------------
+\section{Research Gaps and Positioning of LungInsight}
+
+Across the reviewed literature, several consistent gaps emerge. First, the majority of
+high-performing models rely exclusively on CT imaging, discarding the complementary
+diagnostic signal available in structured clinical records such as smoking history, age,
+emphysema score, and lung function. Second, explainability — where present — is typically
+limited to imaging heatmaps via Grad-CAM, with few systems offering feature-level
+attribution for clinical variables. Third, most works are evaluated on a single dataset,
+limiting generalisability across populations and scanner types. Finally, end-to-end
+clinical deployment with an accessible interface for non-specialist practitioners remains
+largely unaddressed.
+
+LungInsight addresses these gaps by developing a multimodal late-fusion architecture that
+jointly encodes CT imaging through a DenseNet-based convolutional branch and clinical
+tabular data through an MLP-based encoder. Explainability is applied at both modalities:
+Grad-CAM localises suspicious regions in CT slices, while SHAP values quantify the
+contribution of individual clinical features to each patient-level prediction. The system
+is evaluated using a comprehensive suite of metrics — including ROC-AUC, F1-score,
+PR-AUC, Brier score, and calibration curves — and is delivered through a Streamlit
+dashboard that enables real-time clinical use without specialist AI expertise.
+
+%-----------------------------------------------------------------------
+\begin{table}[H]
+\centering
+\captionsetup{justification=centering}
+\caption{Summary of Reviewed Literature}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{clllll}
+\toprule
+\textbf{SI No.} & \textbf{Author(s)} & \textbf{Year} & \textbf{Method} & \textbf{Key Result} & \textbf{Key Gap} \\
+\midrule
+1 & Hammad et al. & 2025 & Custom CNN + Grad-CAM & $\sim$95\% accuracy & Single dataset; no clinical integration \\
+2 & Alqahtani et al. & 2025 & EfficientNet + Grad-CAM & Accurate stage classification & 3-class only; no multimodal fusion \\
+3 & Chaudhari \& Gudadhe & 2025 & Survey of ML/DL methods & Overview of AI applications & No quantitative benchmarking \\
+4 & Murthy et al. & 2025 & Optimised CNN & Fast inference & No standard metrics or radiologist baseline \\
+5 & Bouamrane et al. & 2024 & CNN + Curriculum Learning + XAI & Improved cross-dataset robustness & CT only; no multimodal inputs \\
+6 & Niu et al. & 2025 & Multimodal foundation model & Strong screening performance & Screening only; limited interpretability \\
+7 & Zheng et al. & 2021 & Interpretable CAD & Improved malignancy prediction & Outdated; single dataset \\
+8 & Oncu \& Ciftci & 2025 & CNN + ANN (multimodal) & Improved diagnostic accuracy & Unspecified datasets; missing modality gaps \\
+9 & Salhi et al. & 2026 & AI on LIDC-IDRI & High nodule detection accuracy & Legacy annotations; no risk scoring \\
+10 & Yamada et al. & 2024 & Multimodal DL (low-dose CT) & Promising mediastinal results & Mediastinal scope only; small cohort \\
+11 & Achyutha Sree et al. & 2025 & Multi-objective DL on LDCT & $>$90\% accuracy & High complexity; limited dataset diversity \\
+12 & Gondkar et al. & 2024 & CNN + GRU & 92--95\% accuracy & GRU redundant for static images \\
+13 & Prathima et al. & 2025 & CNN / Ensemble & 93--97\% accuracy & High cost; no early-stage focus \\
+14 & Koyyada et al. & 2023 & CNN + Object Detection (X-ray) & 85--90\% accuracy & Lower than CT; high false negatives \\
+15 & Pawar et al. & 2025 & Survey (NSCLC) & Up to 97\% across studies & No experimental validation \\
+\bottomrule
+\end{tabular}}
+\label{LitSurveyTable}
+\end{table}
+
 }
