@@ -52,6 +52,15 @@ The \textbf{explainability layer} operates post-inference. Grad-CAM hooks attach
 
 The \textbf{presentation layer} is a Streamlit-based dashboard that provides an end-to-end interactive interface, integrating file upload, model inference, heatmap rendering, SHAP waterfall plots, and a clinician-facing risk summary.
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{fig_system_architecture.png}
+    \caption[LungInsight system architecture]{LungInsight system architecture
+    showing the six logical zones (inputs, preprocessing, model branches,
+    fusion, explainability, and dashboard) and the end-to-end dataflow from
+    DICOM/CSV ingestion to clinician-facing outputs.}
+    \label{fig:system-architecture}
+\end{figure}
 %--------------------------------------------------------------------------------------
 
 \section{Detailed Design}
@@ -75,6 +84,16 @@ Integration proceeds via patient-level matching on shared demographic identifier
 \textbf{Clinical Branch:} The clinical feature vector passes through a three-layer MLP with batch normalisation and dropout regularisation at each hidden layer, producing an embedding $\mathbf{f}_{\text{clin}} \in \mathbb{R}^{d_{\text{clin}}}$.
 
 \textbf{Fusion Head:} The two embeddings are concatenated, $\mathbf{f}_{\text{fused}} = [\mathbf{f}_{\text{img}} \| \mathbf{f}_{\text{clin}}]$, and passed through two fully connected layers with ReLU activations. The final layer produces a scalar malignancy probability via a sigmoid activation and a multi-class stage logit via a softmax activation.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{fig_model_architecture.png}
+    \caption[Late-fusion multimodal model architecture]{Late-fusion model
+    architecture: DenseNet-121 imaging encoder (left), three-layer clinical
+    MLP encoder (right), and the fusion head with malignancy and stage output
+    heads (centre). Grad-CAM hooks attach to the final dense block; SHAP
+    operates on the clinical embedding.}
+    \label{fig:model-architecture}
+\end{figure}
 
 \subsection{Training Protocol}
 

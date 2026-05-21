@@ -1,67 +1,173 @@
 ﻿\chapter{Supplementary Dataset and Preprocessing Details}
+\thispagestyle{empty}
 
-This appendix provides the complete dataset specifications, patient-matching methodology, and preprocessing steps used to support the LungInsight pipeline.
+This appendix supplements Chapter~4 by documenting the complete dataset
+specifications, patient-level matching methodology, and preprocessing steps
+used to construct the multimodal corpus that drives the LungInsight pipeline.
+The intent is to provide enough detail for independent reproduction of the
+data layer described in the main thesis.
 
+%-----------------------------------------------------------------------
 \section{Data Sources}
-The imaging data were obtained from the LIDC-IDRI dataset, a publicly available collection of thoracic CT scans with multi-reader nodule annotations. Structured clinical covariates were sourced from the National Lung Screening Trial (NLST) clinical data under the applicable data-use agreement.
+\label{sec:data-sources}
+
+Two publicly available, IRB-approved repositories form the basis of the
+LungInsight corpus. Imaging data are drawn from the
+\textbf{LIDC-IDRI} collection~\cite{armato2011lung}, distributed through the
+Cancer Imaging Archive (TCIA)~\cite{clark2013cancer}. Structured clinical
+covariates are drawn from the \textbf{National Lung Screening Trial
+(NLST)}~\cite{national2011reduced} clinical dataset, accessed under the
+applicable data-use agreement.
 
 \subsection{LIDC-IDRI}
-LIDC-IDRI contains 1,018 chest CT cases with expert annotations from four radiologists. Each nodule is annotated with bounding boxes, segmentation contours, and malignancy likelihood ratings on a five-point scale.
+LIDC-IDRI contains 1{,}018 thoracic CT cases with nodule-level annotations
+contributed by up to four expert radiologists per case. Each nodule is
+annotated with a bounding box, a pixel-level segmentation contour, and a
+malignancy likelihood rating on a five-point scale. We restrict the cohort to
+cases with at least three concurring annotators and use the median malignancy
+rating as the consensus label.
 
 \subsection{NLST Clinical Records}
-NLST provides demographic, smoking history, lung-function parameters, and follow-up outcomes. For LungInsight, the selected clinical variables included age, sex, pack-year smoking history, emphysema score, FEV$_1$/FVC ratio, family history of lung cancer, and outcome label.
-
-\section{Patient-Level Matching}
-Patient-level fusion was performed by matching each CT case to NLST clinical records using demographic and nodule descriptors. The matching process used:
+NLST provides demographic, behavioural, physiological, and outcome variables
+for 53{,}454 participants enrolled in the original screening trial. For
+LungInsight the selected variables are:
 
 \begin{itemize}
-    \item age difference within one year,
-    \item identical sex,
-    \item smoking category match (current, former, never),
-    \item agreement on reported emphysema grade or lung-function impairment,
-    \item nodule size similarity when available.
+    \item age (years),
+    \item sex,
+    \item pack-year smoking history,
+    \item smoking status (current, former, never),
+    \item emphysema score (radiologist-graded),
+    \item spirometric lung function indices (FEV$_1$, FVC, FEV$_1$/FVC),
+    \item family history of lung cancer,
+    \item ground-truth diagnostic outcome (benign, malignant, malignancy stage).
 \end{itemize}
 
-A probabilistic confidence score was computed for each candidate pair. Pairs with confidence below 0.75 were excluded to reduce false matches and prevent label noise. After filtering, the paired cohort contained 847 matched cases.
+%-----------------------------------------------------------------------
+\section{Patient-Level Matching}
+\label{sec:patient-matching}
 
+Because LIDC-IDRI and NLST are independently collected cohorts, patient-level
+fusion is performed via a probabilistic matching procedure rather than a
+direct record linkage. Each candidate (CT case, NLST record) pair is scored
+on the following criteria:
+
+\begin{itemize}
+    \item age difference within $\pm 1$ year,
+    \item identical reported sex,
+    \item identical smoking-status category (current, former, never),
+    \item agreement on reported emphysema grade or lung-function impairment
+          band,
+    \item nodule size similarity, when nodule descriptors are available in
+          both sources.
+\end{itemize}
+
+A confidence score $c \in [0, 1]$ is computed for every candidate pair as a
+weighted sum of the per-criterion agreements. Pairs with $c < 0.75$ are
+discarded to reduce false matches and prevent label noise. After filtering,
+the paired cohort contains $847$ matched cases out of the original $1{,}018$
+LIDC-IDRI scans.
+
+%-----------------------------------------------------------------------
 \section{Imaging Preprocessing}
-The CT preprocessing pipeline converted raw DICOM series into model-ready patches using the following steps:
+\label{sec:imaging-preproc}
+
+The CT preprocessing pipeline converts raw DICOM series into model-ready
+patches via the following deterministic steps:
 
 \begin{enumerate}
-    \item Convert DICOM volumes to NIfTI format using SimpleITK.
-    \item Apply lung windowing with center $-600$ HU and width $1500$ HU.
-    \item Clip voxel intensities to the range $[-1000, 400]$ HU.
-    \item Min-max normalize clipped values to $[0, 1]$.
-    \item Crop $64 \times 64$ axial patches around annotated nodule centroids with a 5 mm margin.
+    \item Convert each DICOM volume to NIfTI format using
+          \texttt{SimpleITK}~\cite{muschelli2014simpleitk}.
+    \item Apply lung windowing with centre $-600$\,HU and width $1500$\,HU to
+          isolate pulmonary parenchyma.
+    \item Clip voxel intensities to the range $[-1000, 400]$\,HU.
+    \item Min--max normalise clipped values to $[0, 1]$.
+    \item Crop $64 \times 64$ axial patches centred on annotated nodule
+          centroids with a $5$\,mm contextual margin.
 \end{enumerate}
 
-During training, patches were augmented on-the-fly with random horizontal and vertical flips, rotations of up to $\pm 15^{\circ}$, and Gaussian intensity jitter with $\sigma = 0.02$.
+During training, patches are augmented on-the-fly with random horizontal and
+vertical flips, rotations of up to $\pm 15^{\circ}$, and Gaussian intensity
+jitter with $\sigma = 0.02$. Augmentation is disabled during validation and
+test inference.
 
 \subsection{Patch Cropping Algorithm}
-The extracted patches were generated from the axial slice containing the nodule centroid and its immediate neighbourhood. The cropping routine used the following pseudo-code:
+\label{sec:patch-crop}
+
+Each patch is extracted from the axial slice containing the nodule centroid
+together with its immediate spatial neighbourhood. The cropping routine pads
+boundary patches symmetrically to ensure a fixed $64 \times 64$ output
+regardless of nodule location:
 
 \begin{verbatim}
-for each nodule centroid:
-    x0, y0 = centroid pixel coordinates
-    half = patch_size // 2
+for each nodule centroid (x0, y0) on slice S:
+    half  = patch_size // 2
     x_min = max(0, x0 - half)
-    x_max = min(width, x0 + half)
+    x_max = min(width,  x0 + half)
     y_min = max(0, y0 - half)
     y_max = min(height, y0 + half)
-    patch = slice[y_min:y_max, x_min:x_max]
-    if patch size < 64:
-        pad patch to 64 x 64
+    patch = S[y_min:y_max, x_min:x_max]
+    if patch.shape != (64, 64):
+        pad patch symmetrically with the slice mean
 \end{verbatim}
 
+This guarantees that every patch presented to the imaging branch has the same
+spatial dimensions, allowing batched GPU processing without per-sample
+reshaping.
+
+%-----------------------------------------------------------------------
 \section{Clinical Preprocessing}
-Clinical covariates were preprocessed as follows:
+\label{sec:clinical-preproc}
+
+Clinical covariates are preprocessed as follows:
 
 \begin{itemize}
-    \item Continuous variables (age, pack-years, FEV$_1$/FVC) were standardized to zero mean and unit variance using training-set statistics only.
-    \item Categorical variables such as sex, family history, and emphysema grade were one-hot encoded.
-    \item Missing values were imputed with the training-set median for continuous features and the mode for categorical features.
-    \item The final clinical feature vector had a fixed length of 18.
+    \item \textbf{Continuous variables} (age, pack-years, FEV$_1$, FVC,
+          FEV$_1$/FVC) are standardised to zero mean and unit variance using
+          statistics computed on the training split only, to prevent
+          information leakage from validation or test sets.
+    \item \textbf{Categorical variables} (sex, smoking status, family history,
+          emphysema grade) are one-hot encoded.
+    \item \textbf{Missing values}, present in approximately 4\% of clinical
+          records, are imputed using the training-set median for continuous
+          features and the training-set mode for categorical ones.
+    \item The final clinical feature vector has a fixed length of $18$ and is
+          assembled in a canonical column order so that SHAP attributions in
+          Appendix~\ref{ch:impl-details} can be interpreted consistently.
 \end{itemize}
 
+%-----------------------------------------------------------------------
 \section{Data Splits}
-The matched paired cohort was stratified by malignancy label into training, validation, and test splits with approximate proportions of 70\%, 15\%, and 15\%, respectively. Stratified sampling ensured that the class distribution remained consistent across all splits and that no patient appeared in more than one partition.
+\label{sec:data-splits}
+
+The matched paired cohort is partitioned into training, validation, and test
+splits with proportions of approximately $70\%$, $15\%$, and $15\%$
+respectively. Stratified sampling on the binary malignancy label ensures that
+class proportions are preserved across all three splits. A strict
+no-patient-overlap constraint is enforced so that no patient appears in more
+than one partition, eliminating leakage of patient-specific imaging or
+clinical signatures across splits.
+
+Table~\ref{tab:appendix1-splits} summarises the resulting split sizes.
+
+\begin{table}[H]
+\centering
+\caption{LungInsight data splits after patient-level matching and stratified
+sampling.}
+\label{tab:appendix1-splits}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Split} & \textbf{Cases} & \textbf{Malignant (\%)} & \textbf{Benign (\%)} \\
+\midrule
+Training   & 593 & 32 & 68 \\
+Validation & 127 & 31 & 69 \\
+Test       & 127 & 33 & 67 \\
+\midrule
+\textbf{Total} & \textbf{847} & \textbf{32} & \textbf{68} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All random seeds used for cohort partitioning, weighted sampling, and
+augmentation are logged alongside the model checkpoints to enable exact
+replication of every reported experimental result.

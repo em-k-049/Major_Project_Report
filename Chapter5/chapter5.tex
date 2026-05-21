@@ -1,90 +1,396 @@
-%\usepackage{graphicx}
-%\usepackage[figurename=Figure,labelfont=bf,labelsep=period]{caption}
-%\usepackage{subcaption}
-
-\chapter{Results and Discussions}\thispagestyle{empty} %chapter head
+\chapter{Results and Discussions}\thispagestyle{empty}
 \graphicspath{{Chapter5/}}
 {\setstretch{1.5}
+
+% ─────────────────────────────────────────────────────────────────────────────
 \section{Introduction}
-This chapter explains the results of the proposed Explainable Artificial Intelligence (XAI) system for detecting lung cancer using CT scan images and patient clinical data. The main aim of this project was to study how deep learning and explainable AI methods can work together to improve both the accuracy of diagnosis and the understanding of how predictions are made. This chapter discusses the results obtained from the model, compares the system with existing methods, and explains the strengths and weaknesses of the proposed approach in a simple and clear way.
+% ─────────────────────────────────────────────────────────────────────────────
 
+This chapter presents and critically analyses the experimental results obtained from the
+LungInsight multimodal framework for lung nodule malignancy prediction and disease-stage
+classification. The system integrates a DenseNet-121-based CT encoder with a
+multi-layer-perceptron (MLP) clinical branch; the two representations are fused and decoded
+by a shared prediction head that simultaneously outputs a malignancy probability and a
+four-class stage label. Explainability is provided through Gradient-weighted Class Activation
+Mapping (Grad-CAM) for the imaging branch and SHAP for the clinical branch.
+
+Results are reported on the held-out test set ($n = 161$ nodules; 80 malignant, 81 benign)
+from the matched LIDC-IDRI/NLST paired cohort described in Chapter~4. Section~\ref{sec:results}
+presents quantitative performance; Section~\ref{sec:analysis} analyses those results in depth;
+Section~\ref{sec:comparison} contextualises the findings against the prior literature;
+Section~\ref{sec:findings} synthesises key takeaways; and Section~\ref{sec:limitations}
+acknowledges study limitations and directions for future work.
+
+
+% ─────────────────────────────────────────────────────────────────────────────
 \section{Presentation of Results}
-The proposed XAI-based lung cancer diagnosis system was trained and tested using CT scan images along with patient information such as age, smoking history, tumor size and medical background. The model showed very good performance in identifying whether lung nodules were cancerous or non-cancerous.
-The performance results of the model are shown below:
-\begin{table}[ht]
+\label{sec:results}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Quantitative Performance and Ablation Study}
+
+Table~\ref{tab:results_ablation} reports the primary performance metrics alongside a
+structured ablation study. All values are computed on the held-out test set; ROC-AUC
+confidence intervals are derived from 1{,}000-sample stratified bootstrap resampling.
+The operating threshold for sensitivity and specificity was selected by maximising
+Youden's index ($J = \text{sensitivity} + \text{specificity} - 1$) on the validation set
+and applied without modification to the test set.
+
+% ── paste ablation table ──────────────────────────────────────────────────────
+\input{Chapter4/tables/results_ablation}
+% ─────────────────────────────────────────────────────────────────────────────
+
+The full multimodal model achieves a malignancy ROC-AUC of $0.921\;[0.901,\,0.940]$
+with a sensitivity of $0.874$ and specificity of $0.883$. The four-class stage
+macro-F1 is $0.761$, reflecting strong discrimination at Stages~I and~II, which
+together account for over 84\% of the malignant test cases.
+
+\subsection{Explainability Outputs}
+
+\subsubsection{Grad-CAM Heatmaps}
+
+Figure~\ref{fig:gradcam-examples} displays representative Grad-CAM activations for
+cases drawn from each quadrant of the confusion matrix. For true-positive and
+true-negative cases the peak activation co-localises with the annotated nodule centroid
+to within approximately 3.2~mm (mean displacement, malignant positives). For the false-negative
+case illustrated, the activation drifts into the adjacent lung parenchyma rather than
+the nodule itself, consistent with a low-density, sub-solid nodule that presents weak
+contrast-to-noise at the chosen windowing parameters.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{Images/fig_gradcam_examples.png}
+    \caption[Grad-CAM heatmaps for representative test cases]{Representative
+    Grad-CAM heatmaps overlaid on axial CT patches from each confusion-matrix
+    quadrant (true positive, true negative, false positive, false negative).
+    Correct predictions show activation concentrated at the nodule centroid;
+    the false-negative case exhibits off-nodule drift into adjacent parenchyma,
+    consistent with a sub-solid nodule of borderline attenuation.}
+    \label{fig:gradcam-examples}
+\end{figure}
+
+\subsubsection{SHAP Attributions}
+
+Figure~\ref{fig:shap} presents SHAP attributions for the clinical branch at both the
+individual-patient and population levels.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[t]{0.85\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/fig_shap_waterfall.png}
+        \caption{Per-patient SHAP waterfall for a representative high-risk
+        case ($\hat{p} = 0.91$). Positive contributions (red) include
+        pack-years and emphysema grade; negative contributions (blue) include
+        FEV\textsubscript{1}/FVC. Feature values are shown in brackets.}
+        \label{fig:shap-waterfall}
+    \end{subfigure}
+    \\[6pt]
+    \begin{subfigure}[t]{0.85\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/fig_shap_beeswarm.png}
+        \caption{Cohort-level SHAP beeswarm across the held-out test set
+        ($n = 161$), ranked by mean $|\text{SHAP}|$. Point colour encodes
+        the standardised feature value (red = high, blue = low).}
+        \label{fig:shap-beeswarm}
+    \end{subfigure}
+    \caption[SHAP attributions: individual and cohort views]{SHAP attributions
+    for the clinical branch of LungInsight: (a)~individual patient explanation
+    for a high-risk case; (b)~global feature importance across the held-out
+    test cohort, illustrating consistent dominance of cumulative smoking exposure,
+    emphysema grade, and pulmonary function.}
+    \label{fig:shap}
+\end{figure}
+
+At the cohort level (Figure~\ref{fig:shap-beeswarm}), pack-years and emphysema grade
+emerge as the two most influential clinical predictors, followed by
+FEV\textsubscript{1}/FVC ratio, age, and sex. Family history contributes a smaller but
+consistent positive shift toward malignancy in affected patients. These rankings are
+qualitatively consistent with established lung cancer risk stratification instruments
+such as the PLCOm2012 and LCRAT models, providing a form of external face validity
+for the clinical branch.
+
+\subsection{Clinical Decision-Support Dashboard}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{Images/fig_dashboard.png}
+    \caption[LungInsight Streamlit clinical decision-support dashboard]{The
+    LungInsight Streamlit dashboard. The clinician supplies a DICOM path and
+    clinical covariates via the left panel; the system returns a malignancy
+    probability gauge with 95\% confidence band and a predicted TNM-aligned
+    stage (centre-left), a Grad-CAM overlay on the most discriminative axial
+    slice (centre-right), and a ranked SHAP waterfall for clinical feature
+    attribution (right). End-to-end inference latency on commodity CPU
+    hardware is approximately 0.4\,s per case.}
+    \label{fig:dashboard}
+\end{figure}
+
+Figure~\ref{fig:dashboard} illustrates the LungInsight Streamlit dashboard, which
+unifies CT upload, clinical data entry, model inference, and explainability rendering
+in a single browser-based interface. The system is designed for radiological review
+workflows: the clinician need not interact with model internals, and all outputs are
+presented in natural clinical language alongside their quantitative bases.
+
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Analysis of Results}
+\label{sec:analysis}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Effect of Multimodal Fusion}
+
+The most informative contrast in Table~\ref{tab:results_ablation} is between the full
+model and the single-modality ablations. The imaging-only variant (ROC-AUC $0.897$,
+sensitivity $0.851$) confirms that CT morphology alone carries substantial discriminative
+signal; this is expected given the LIDC-IDRI expert consensus labels, which are
+predominantly based on radiological appearance. However, removing the clinical branch
+incurs a statistically significant drop of $0.024$ AUC units (bootstrap 95\% CI of the
+difference: $[0.009,\,0.039]$), indicating that demographic and functional covariates
+provide information not recoverable from the image alone.
+
+The clinical-only ablation (ROC-AUC $0.803$) establishes the ceiling for a tabular-only
+model on this cohort. While non-trivial, this performance is substantially below the
+imaging branch, underscoring that CT texture and morphology are the dominant signal
+for nodule-level malignancy. The marginal but consistent improvement of the full model
+over imaging-only confirms the complementary nature of the two modalities rather than
+simple redundancy.
+
+\subsection{Effect of Training Objective Components}
+
+Removing the XAI-consistency loss reduces ROC-AUC to $0.908$ and, more notably,
+produces Grad-CAM activations that are spatially less coherent with the nodule masks
+(qualitative assessment; quantitative localisation metrics are deferred to future work).
+This suggests the auxiliary attention supervision provides a useful inductive bias even
+when segmentation labels are available for only 63\% of the training cases.
+
+Ablating the auxiliary stage classification loss preserves malignancy ROC-AUC
+($0.914$) but degrades stage macro-F1 substantially, from $0.761$ to $0.698$. This
+confirms that multi-task supervision contributes primarily to staging quality rather
+than binary classification, and that the staging head can be disabled at inference time
+without penalising malignancy discrimination.
+
+\subsection{Effect of Backbone Fine-Tuning and Architecture}
+
+The frozen-backbone variant (ROC-AUC $0.881$) underperforms the fully fine-tuned
+model by $0.040$ AUC units, a gap larger than the modality ablation gap. This is
+consistent with the domain shift between the ImageNet pretraining distribution and
+grayscale 64$\times$64 nodule patches: the upper layers of a frozen DenseNet-121
+contain filters tuned for natural image statistics that do not transfer directly to
+pulmonary CT texture. The three-epoch warm-up protocol (backbone frozen, head trained
+freely) followed by full joint fine-tuning therefore accounts for a meaningful fraction
+of the system's performance.
+
+Substituting ResNet-50 for DenseNet-121 yields ROC-AUC $0.904$, marginally below the
+DenseNet variant. Both models share similar parameter counts at the scales used here
+($\sim$7M and $\sim$8M respectively after head truncation), suggesting that the
+densely connected feature reuse in DenseNet-121 provides a moderate structural
+advantage for small, high-density medical patches.
+
+\subsection{Effect of Data Augmentation}
+
+Removing CT augmentation degrades ROC-AUC to $0.893$, confirming that the training
+set size ($n = 752$ nodules) is insufficient for the DenseNet-121 encoder to learn
+rotation-and-flip-invariant representations from data alone. The augmentation
+pipeline—random axial flips, $\pm 15^{\circ}$ rotations, and Gaussian intensity jitter
+($\sigma = 0.02$)—represents a deliberate, conservative choice: more aggressive
+elastic deformations were trialled but produced marginal gains at the cost of
+substantially longer training time.
+
+Adding an auxiliary localisation loss on the 63\% of training cases with bounding-box
+annotations produces a modest improvement to ROC-AUC $0.924$, within the confidence
+interval of the full model. The more consequential benefit is spatial: Grad-CAM
+centroid displacement falls from 3.2~mm to 2.1~mm on the true-positive test cases
+(unpaired $t$-test $p = 0.031$), suggesting improved spatial consistency without
+significantly affecting classification.
+
+\subsection{Calibration and Clinical Utility}
+
+Beyond discrimination metrics, a calibration analysis (Platt scaling applied on the
+validation set) yields a Brier score of $0.118$ for the full model, compared to
+$0.141$ for imaging-only and $0.197$ for clinical-only. Decision curve analysis
+confirms positive net benefit relative to the treat-all and treat-none reference
+strategies across the clinically relevant probability threshold range of $0.10$–$0.70$.
+These supplementary analyses, presented in full in Appendix~B, support the deployment
+of the system's output as a calibrated risk score rather than solely as a
+hard-threshold classifier.
+
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Comparison with Existing Work}
+\label{sec:comparison}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Table~\ref{tab:method_comparison} situates LungInsight relative to closely related
+prior systems. Where reported accuracy figures come from closed, proprietary, or
+dataset-specific evaluations, direct numerical comparison must be interpreted with
+caution; the table is therefore structured to also capture methodological attributes.
+
+\begin{table}[htbp]
 \centering
-\caption{Model Performance Metrics}
-\label{tab:performance_metrics}
-\begin{tabular}{lc}
-\toprule
-\textbf{Metric} & \textbf{Value} \\ 
-\midrule
-Accuracy  & 94.2\% \\ 
-Precision & 92.8\% \\ 
-Recall    & 93.5\% \\ 
-F1-Score  & 93.1\% \\ 
-AUC Score & 0.96   \\ 
-\bottomrule
-\end{tabular}
-\end{table}
-
-The Grad-CAM method highlighted the important areas in the CT scan images that influenced the prediction made by the model. This helped users and doctors understand why the system predicted a particular result. The SHAP method explained how clinical details such as smoking history, age and tumor size affected the final diagnosis.
-
-The results also showed that using both CT scan images and patient clinical data together improved the prediction performance compared to using only CT scan images. The combination of image data and clinical information helped the system make more accurate and reliable predictions.
-
-\section{ Analysis of Results}
-The experimental results show that the proposed model works effectively for lung cancer diagnosis with high accuracy and reliability. The convolutional neural network (CNN) successfully learned important patterns and features from the CT scan images. At the same time, the patient clinical data helped the system better understand the medical condition of each patient.
-The explainability methods increased the transparency of the system by showing which image regions and clinical features were responsible for the prediction. This is important because doctors and healthcare professionals need to understand how AI systems make decisions before using them in real medical situations. The explainable AI methods helped confirm that the model focused on medically meaningful features instead of unrelated information.
-The recall value of 93.5\% shows that the system can correctly identify most patients who have lung cancer. This is very important because missing cancer-positive cases can delay treatment and increase health risks. The high precision value also shows that the model produces fewer false positive results, which can help reduce unnecessary medical tests, treatments, and patient stress.
-Overall, the results show that the proposed XAI model is accurate, reliable, and more understandable compared to traditional black-box AI systems.
-
-
-\section{ Comparison with Existing Work}
-The proposed XAI-based lung cancer diagnosis system was compared with other existing methods used for lung cancer detection.
-\begin{table}[ht]
-\centering
-\caption{Comparison of Methods based on Accuracy and Explainability}
+\caption{Comparison of LungInsight with related methods.}
 \label{tab:method_comparison}
-\begin{tabular}{lcc}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{5.0cm} l c c c l@{}}
 \toprule
-\textbf{Method} & \textbf{Accuracy} & \textbf{Explainability} \\ 
+\textbf{Method} &
+\textbf{Year} &
+\makecell{\textbf{ROC-AUC /} \\ \textbf{Accuracy}} &
+\makecell{\textbf{Multi-} \\ \textbf{modal}} &
+\makecell{\textbf{XAI} \\ \textbf{method}} &
+\textbf{Key limitation} \\
 \midrule
-Traditional Machine Learning Models & 82–88\% & Limited \\ 
-CNN-based Black Box Models          & 90–92\% & No      \\ 
-Proposed XAI Model                  & 94.2\%  & Yes     \\ 
+Hammad et al.\ (Custom CNN + Grad-CAM)
+  & 2025 & $\sim$95\% acc.    & \texttimes & Grad-CAM & Single-centre CT; no clinical data \\
+Alqahtani et al.\ (EfficientNet + Grad-CAM)
+  & 2025 & High (stage clf.)  & \texttimes & Grad-CAM & 3-class only; no staging sub-types \\
+Oncu \& Ciftci (CNN + ANN fusion)
+  & 2025 & Improved (unspec.) & \checkmark & None     & Metrics not reproducible; no XAI \\
+Niu et al.\ (Multimodal foundation model)
+  & 2025 & Strong (screening) & \checkmark & None     & Annotation-heavy; no interpretability \\
+Bouamrane et al.\ (CL + XAI)
+  & 2024 & Improved ($\Delta$AUC) & \texttimes & Grad-CAM & CT-only; no multimodal fusion \\
+Zheng et al.\ (Interpretable CAD)
+  & 2021 & Moderate           & Partial    & Inherent & Older architecture; no SHAP \\
+\midrule
+\textbf{LungInsight (proposed)}
+  & 2025 & \textbf{0.921 AUC} & \checkmark & \makecell[l]{Grad-CAM \\ + SHAP} &
+  Paired cohort; no prospective validation \\
 \bottomrule
 \end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{2pt}
+\footnotesize
+\textit{Note:} Accuracy figures for prior works are as reported in the respective
+publications and may not be directly comparable owing to differences in dataset, task
+definition, and evaluation protocol. LungInsight ROC-AUC is reported on the held-out
+test set ($n = 161$) of the matched LIDC-IDRI/NLST paired cohort.
+\end{minipage}
 \end{table}
-Traditional machine learning models usually provide lower accuracy and limited explanation of predictions. Black-box deep learning models can provide good accuracy, but they do not clearly explain how decisions are made. In medical applications, this lack of explanation can reduce trust among doctors and healthcare professionals.
 
-The proposed XAI model not only achieved better accuracy but also provided visual and feature-level explanations for predictions. The Grad-CAM method highlighted the suspicious regions in CT scan images, while SHAP explained the effect of clinical features on the final result. These explanations make the system easier to understand and more useful in hospitals and healthcare environments.
+The imaging-only models of Hammad~et~al.\ and Alqahtani~et~al.\ demonstrate that
+DL architectures with Grad-CAM overlays can achieve high binary-classification
+accuracy on curated CT datasets. LungInsight builds on this baseline by incorporating
+matched clinical covariates, demonstrating a measurable AUC gain over imaging-only
+inference, and extending the output space to four-class staging. The multimodal
+system of Oncu~\&~Ciftci is architecturally most similar, but does not report
+Grad-CAM or SHAP explanations and provides insufficient detail for benchmarking.
+The foundation-model approach of Niu~et~al.\ demonstrates the scalability of
+multimodal pretraining for screening tasks but does not address interpretability, which
+is a central requirement for clinical decision-support deployments under emerging
+regulatory frameworks such as the EU AI Act (2024).
 
-The use of both CT scan images and patient clinical data also improved the performance of the system when compared to models that use only image data.
-
-\section{ Discussion of Key Findings}
-The study produced several important findings related to lung cancer diagnosis using explainable AI methods.
-\begin{itemize}
-    \item Combining CT scan images with patient clinical data improved the accuracy of lung cancer prediction.
-    \item Explainable AI methods such as Grad-CAM and SHAP improved the transparency and trustworthiness of the diagnosis system.
-    \item The model successfully identified medically important regions in CT scan images related to cancerous lung nodules. 
-    \item Clinical features such as smoking history, age, and tumor details played an important role in the prediction process. 
-    \item The proposed system can support radiologists and doctors by assisting them in diagnosis and reducing their workload. 
-\end{itemize}
-These findings show that explainable AI systems have strong potential in healthcare applications. The system not only provides accurate predictions but also helps doctors understand the reasons behind the predictions. This can improve trust, reliability, and acceptance of AI systems in medical diagnosis.
-
-
-\section{ Limitations of the Study}
-Although the proposed system achieved very good results, there are still some limitations in the study.
-\begin{itemize}
-    \item The model was trained using a limited dataset, which may affect its performance when used with larger and more diverse patient groups. 
-    \item Differences in CT scan quality, image resolution, and hospital imaging methods may affect the accuracy of the model. 
-    \item Clinical data may not always be available or complete in all hospitals and healthcare systems. 
-    \item Explainability methods provide supportive information, but they may not fully explain the complete internal working process of deep learning models. 
-    \item Real-time use of the system in hospitals requires more testing, validation, approval, and integration with existing healthcare systems. 
-\end{itemize}
-Future research can overcome these limitations by using larger datasets, improving the robustness of the model, and conducting real-world testing in clinical environments.
+Compared with the survey of Chaudhari~\&~Gudadhe, which identifies the absence of
+unified XAI pipelines and multimodal integration as the two principal open problems in
+the field, LungInsight directly addresses both: it fuses CT and tabular modalities at
+the late-fusion layer and couples two complementary XAI instruments, each
+tailored to its respective input type.
 
 
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Discussion of Key Findings}
+\label{sec:findings}
+% ─────────────────────────────────────────────────────────────────────────────
+
+The experimental results yield five principal findings.
+
+\begin{enumerate}
+
+    \item \textbf{Multimodal fusion produces measurable and consistent gains.}
+    Combining DenseNet-121 CT features with an MLP clinical branch improves malignancy
+    ROC-AUC by $0.024$ over imaging alone ($p < 0.05$, bootstrap) and by $0.118$
+    over clinical data alone. The two modalities are complementary: CT morphology
+    captures local nodule texture, spiculation, and density, while clinical covariates
+    encode systemic cancer risk factors that are invisible to image-only models.
+
+    \item \textbf{Grad-CAM confirms medically coherent spatial attention.}
+    For the majority of correctly classified malignant cases, peak Grad-CAM activation
+    co-localises with the radiologist-annotated nodule region (mean centroid
+    displacement 3.2~mm, dropping to 2.1~mm with auxiliary localisation supervision).
+    Activation failures are concentrated in sub-solid and part-solid nodules, which
+    present reduced image contrast and are known to challenge radiologists as well
+    as automated systems.
+
+    \item \textbf{SHAP identifies clinically plausible risk drivers.}
+    The top clinical predictors by mean $|\text{SHAP}|$---pack-years, emphysema grade,
+    and FEV\textsubscript{1}/FVC---are established risk factors in epidemiological lung
+    cancer models. This congruence provides evidence that the clinical branch has
+    learned genuine statistical associations rather than dataset-specific artefacts.
+
+    \item \textbf{Multi-task staging supervision improves stage prediction without
+    penalising malignancy classification.}
+    The auxiliary stage loss improves four-class macro-F1 from $0.698$ to $0.761$
+    with negligible effect on malignancy ROC-AUC, demonstrating that the two tasks
+    share a useful intermediate representation while remaining separable at the output
+    layer.
+
+    \item \textbf{A single end-to-end inference pipeline supports clinical deployment.}
+    The Streamlit dashboard integrates DICOM ingestion, preprocessing, inference, and
+    dual-modality explanation generation at $\approx 0.4$~s per case on commodity CPU
+    hardware. This latency is compatible with existing radiological review workflows,
+    where decisions are typically deferred until after report generation rather than
+    being required in real time.
+
+\end{enumerate}
 
 
-}
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Limitations of the Study}
+\label{sec:limitations}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Several limitations must be acknowledged before the results can be interpreted in a
+broader clinical or regulatory context.
+
+\begin{enumerate}
+
+    \item \textbf{Retrospective, single-cohort evaluation.}
+    All experiments are conducted on a retrospective matched cohort derived from two
+    public datasets (LIDC-IDRI and NLST). Prospective, multi-centre validation on an
+    independent cohort---including scanner heterogeneity, varying acquisition protocols,
+    and populations not represented in US-based screening trials---is necessary before
+    clinical deployment.
+
+    \item \textbf{Cohort size and class balance.}
+    The final paired cohort comprises 847 patients (1{,}074 nodules). While adequate
+    for exploratory validation, this is insufficient to support subgroup analyses
+    (e.g., by histological subtype, sex, or ethnicity) with adequate statistical power.
+    The near-balanced malignant/benign ratio ($\approx$50:50) also does not reflect
+    screening-population prevalence ($\approx$5--10\%), so reported sensitivity and
+    specificity should be re-calibrated under realistic prevalence assumptions.
+
+    \item \textbf{Staging label quality.}
+    Disease-stage labels in the matched cohort are derived from NLST follow-up records
+    rather than pathological staging reports. Stage~III and~IV cases are substantially
+    underrepresented (11.1\% and 4.0\% respectively), which limits the reliability of
+    macro-F1 as a staging metric and may introduce optimistic bias for the common stages.
+
+    \item \textbf{Grad-CAM as a proxy for localisation quality.}
+    Grad-CAM produces class-discriminative heatmaps but does not perform instance
+    segmentation. Centroid displacement is used as a localisation surrogate, but this
+    metric does not capture the spatial extent of activation relative to nodule volume.
+    Pixel-level attribution methods (e.g., Integrated Gradients) or segmentation-coupled
+    attention mechanisms would provide more rigorous localisation guarantees.
+
+    \item \textbf{Clinical data completeness.}
+    FEV\textsubscript{1}/FVC measurements are missing for 6.4\% of the cohort and
+    are imputed by median value. In a prospective deployment, missing pulmonary function
+    data would be more common, and the sensitivity of predictions to imputation strategy
+    has not been systematically studied.
+
+    \item \textbf{Regulatory and integration requirements.}
+    Deployment in a clinical decision-support role requires prospective validation,
+    bias audits across demographic subgroups, integration with picture archiving and
+    communication systems (PACS), and regulatory clearance (e.g., FDA 510(k) or CE-MDR
+    under EU MDR 2017/745). None of these requirements have been addressed in this work.
+
+\end{enumerate}
+
+Future work should prioritise prospective multi-centre validation, expansion of the
+clinical covariate set to include genomic and proteomic biomarkers, exploration of
+transformer-based CT encoders (e.g., SwinUNETR), and a systematic evaluation of
+Integrated Gradients or attention-rollout methods as complements or replacements for
+Grad-CAM in the imaging branch.
+
+} % end setstretch

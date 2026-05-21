@@ -399,45 +399,6 @@ INPUT C:\Program Files\MiKTeX\tex\latex\tools\longtable.sty
 INPUT .\Thesis.aux
 INPUT .\Thesis.aux
 INPUT Thesis.aux
-INPUT .\CertificateGuide\certificateGuide.aux
-INPUT .\CertificateGuide\certificateGuide.aux
-INPUT CertificateGuide\certificateGuide.aux
-INPUT .\Abstract\Abstract.aux
-INPUT .\Abstract\Abstract.aux
-INPUT Abstract\Abstract.aux
-INPUT .\Acknowledgement\acknowledgement.aux
-INPUT .\Acknowledgement\acknowledgement.aux
-INPUT Acknowledgement\acknowledgement.aux
-INPUT .\Acknowledgement\declaration.aux
-INPUT .\Acknowledgement\declaration.aux
-INPUT Acknowledgement\declaration.aux
-INPUT .\Chapter1\chapter1.aux
-INPUT .\Chapter1\chapter1.aux
-INPUT Chapter1\chapter1.aux
-INPUT .\Chapter2\chapter2.aux
-INPUT .\Chapter2\chapter2.aux
-INPUT Chapter2\chapter2.aux
-INPUT .\Chapter3\chapter3.aux
-INPUT .\Chapter3\chapter3.aux
-INPUT Chapter3\chapter3.aux
-INPUT .\Chapter4\chapter4.aux
-INPUT .\Chapter4\chapter4.aux
-INPUT Chapter4\chapter4.aux
-INPUT .\Chapter5\chapter5.aux
-INPUT .\Chapter5\chapter5.aux
-INPUT Chapter5\chapter5.aux
-INPUT .\Chapter6\chapter6.aux
-INPUT .\Chapter6\chapter6.aux
-INPUT Chapter6\chapter6.aux
-INPUT .\Appendix1\appendix1.aux
-INPUT .\Appendix1\appendix1.aux
-INPUT Appendix1\appendix1.aux
-INPUT .\Appendix2\appendix2.aux
-INPUT .\Appendix2\appendix2.aux
-INPUT Appendix2\appendix2.aux
-INPUT .\References\ref.aux
-INPUT .\References\ref.aux
-INPUT References\ref.aux
 OUTPUT Thesis.aux
 INPUT C:\Program Files\MiKTeX\tex\context\base\mkii\supp-pdf.mkii
 INPUT C:\Program Files\MiKTeX\tex\context\base\mkii\supp-pdf.mkii
@@ -447,14 +408,8 @@ INPUT C:\Program Files\MiKTeX\tex\latex\epstopdf-pkg\epstopdf-base.sty
 INPUT C:\Program Files\MiKTeX\tex\latex\00miktex\epstopdf-sys.cfg
 INPUT C:\Program Files\MiKTeX\tex\latex\00miktex\epstopdf-sys.cfg
 INPUT C:\Program Files\MiKTeX\tex\latex\00miktex\epstopdf-sys.cfg
-INPUT .\Thesis.out
-INPUT .\Thesis.out
-INPUT Thesis.out
-INPUT Thesis.out
-OUTPUT Thesis.pdf
-INPUT .\Thesis.out
-INPUT .\Thesis.out
 OUTPUT Thesis.out
+OUTPUT Thesis.pdf
 INPUT C:\Users\emkap\AppData\Roaming\MiKTeX\tex\latex\caption\ltcaption.sty
 INPUT C:\Users\emkap\AppData\Roaming\MiKTeX\tex\latex\caption\ltcaption.sty
 INPUT C:\Users\emkap\AppData\Roaming\MiKTeX\tex\latex\pdflscape\pdflscape.sty
@@ -557,19 +512,10 @@ INPUT C:\Program Files\MiKTeX\fonts\vf\adobe\times\ptmr8t.vf
 INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmr8r.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmr8t.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmb8t.tfm
-INPUT .\Thesis.toc
-INPUT .\Thesis.toc
-INPUT Thesis.toc
+OUTPUT Thesis.toc
 INPUT C:\Program Files\MiKTeX\fonts\vf\adobe\times\ptmb8t.vf
 INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmb8r.tfm
-OUTPUT Thesis.toc
-INPUT .\Thesis.lof
-INPUT .\Thesis.lof
-INPUT Thesis.lof
 OUTPUT Thesis.lof
-INPUT .\Thesis.lot
-INPUT .\Thesis.lot
-INPUT Thesis.lot
 OUTPUT Thesis.lot
 INPUT .\Chapter1\chapter1.tex
 INPUT .\Chapter1\chapter1.tex
@@ -599,10 +545,22 @@ INPUT C:\Users\emkap\AppData\Roaming\MiKTeX\tex\latex\psnfss\ts1ptm.fd
 INPUT C:\Users\emkap\AppData\Roaming\MiKTeX\tex\latex\psnfss\ts1ptm.fd
 INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmr8c.tfm
 INPUT C:\Program Files\MiKTeX\fonts\vf\adobe\times\ptmr8c.vf
+INPUT .\Chapter3\figures\fig_system_architecture.png
+INPUT .\Chapter3\figures\fig_system_architecture.png
+INPUT .\Chapter3\figures\fig_system_architecture.png
+INPUT .\Chapter3\figures\fig_system_architecture.png
+INPUT .\Chapter3\figures\fig_system_architecture.png
+INPUT .\Chapter3\figures\fig_system_architecture.png
 INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmr8t.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmbx12.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmbx8.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmbx6.tfm
+INPUT .\Chapter3\figures\fig_model_architecture.png
+INPUT .\Chapter3\figures\fig_model_architecture.png
+INPUT .\Chapter3\figures\fig_model_architecture.png
+INPUT .\Chapter3\figures\fig_model_architecture.png
+INPUT .\Chapter3\figures\fig_model_architecture.png
+INPUT .\Chapter3\figures\fig_model_architecture.png
 INPUT C:\Program Files\MiKTeX\fonts\vf\adobe\times\ptmr8t.vf
 INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmr8r.tfm
 INPUT .\Chapter4\chapter4.tex
@@ -617,6 +575,60 @@ INPUT C:\Users\emkap\AppData\Roaming\MiKTeX\tex\latex\psnfss\t1pcr.fd
 INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\courier\pcrr8t.tfm
 INPUT C:\Program Files\MiKTeX\fonts\vf\adobe\courier\pcrr8t.vf
 INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\courier\pcrr8r.tfm
+INPUT .\Chapter4\figures\fig_data_matching.png
+INPUT .\Chapter4\figures\fig_data_matching.png
+INPUT .\Chapter4\figures\fig_data_matching.png
+INPUT .\Chapter4\figures\fig_data_matching.png
+INPUT .\Chapter4\figures\fig_data_matching.png
+INPUT .\Chapter4\figures\fig_data_matching.png
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmr10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmmi10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmsy10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmex10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmbx10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmb8t.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmr8t.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmri8t.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\cmextra\cmex7.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\cmextra\cmex7.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmbx10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmbx7.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmbx5.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam7.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam5.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm7.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm5.tfm
+INPUT C:\Program Files\MiKTeX\fonts\vf\adobe\times\ptmb8t.vf
+INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmb8r.tfm
+INPUT C:\Program Files\MiKTeX\fonts\vf\adobe\times\ptmri8t.vf
+INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmri8r.tfm
+INPUT C:\Program Files\MiKTeX\fonts\vf\adobe\times\ptmr8t.vf
+INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmr8r.tfm
+INPUT .\Chapter4\figures\fig_preprocessing_pipeline.png
+INPUT .\Chapter4\figures\fig_preprocessing_pipeline.png
+INPUT .\Chapter4\figures\fig_preprocessing_pipeline.png
+INPUT .\Chapter4\figures\fig_preprocessing_pipeline.png
+INPUT .\Chapter4\figures\fig_preprocessing_pipeline.png
+INPUT .\Chapter4\figures\fig_preprocessing_pipeline.png
+INPUT .\Chapter4\figures\fig_ct_preproc_example.png
+INPUT .\Chapter4\figures\fig_ct_preproc_example.png
+INPUT .\Chapter4\figures\fig_ct_preproc_example.png
+INPUT .\Chapter4\figures\fig_ct_preproc_example.png
+INPUT .\Chapter4\figures\fig_ct_preproc_example.png
+INPUT .\Chapter4\figures\fig_ct_preproc_example.png
+INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmri8t.tfm
+INPUT C:\Program Files\MiKTeX\fonts\vf\adobe\times\ptmri8t.vf
+INPUT C:\Program Files\MiKTeX\fonts\tfm\adobe\times\ptmri8r.tfm
+INPUT .\Chapter4\figures\fig_training_curves.png
+INPUT .\Chapter4\figures\fig_training_curves.png
+INPUT .\Chapter4\figures\fig_training_curves.png
+INPUT .\Chapter4\figures\fig_training_curves.png
+INPUT .\Chapter4\figures\fig_training_curves.png
+INPUT .\Chapter4\figures\fig_training_curves.png
 INPUT C:\Program Files\MiKTeX\tex\latex\amsfonts\ueus.fd
 INPUT C:\Program Files\MiKTeX\tex\latex\amsfonts\ueus.fd
 INPUT C:\Program Files\MiKTeX\tex\latex\amsfonts\ueus.fd
@@ -629,95 +641,3 @@ OUTPUT Chapter5\chapter5.aux
 INPUT .\Chapter5\chapter5.tex
 INPUT .\Chapter5\chapter5.tex
 INPUT Chapter5\chapter5.tex
-INPUT .\Chapter6\chapter6.tex
-INPUT .\Chapter6\chapter6.tex
-OUTPUT Chapter6\chapter6.aux
-INPUT .\Chapter6\chapter6.tex
-INPUT .\Chapter6\chapter6.tex
-INPUT Chapter6\chapter6.tex
-INPUT .\Appendix1\appendix1.tex
-INPUT .\Appendix1\appendix1.tex
-OUTPUT Appendix1\appendix1.aux
-INPUT .\Appendix1\appendix1.tex
-INPUT .\Appendix1\appendix1.tex
-INPUT Appendix1\appendix1.tex
-INPUT .\Appendix2\appendix2.tex
-INPUT .\Appendix2\appendix2.tex
-OUTPUT Appendix2\appendix2.aux
-INPUT .\Appendix2\appendix2.tex
-INPUT .\Appendix2\appendix2.tex
-INPUT Appendix2\appendix2.tex
-INPUT .\References\ref.tex
-INPUT .\References\ref.tex
-OUTPUT References\ref.aux
-INPUT .\References\ref.tex
-INPUT .\References\ref.tex
-INPUT References\ref.tex
-INPUT Thesis.aux
-INPUT .\CertificateGuide\certificateGuide.aux
-INPUT .\CertificateGuide\certificateGuide.aux
-INPUT CertificateGuide\certificateGuide.aux
-INPUT .\Abstract\Abstract.aux
-INPUT .\Abstract\Abstract.aux
-INPUT Abstract\Abstract.aux
-INPUT .\Acknowledgement\acknowledgement.aux
-INPUT .\Acknowledgement\acknowledgement.aux
-INPUT Acknowledgement\acknowledgement.aux
-INPUT .\Acknowledgement\declaration.aux
-INPUT .\Acknowledgement\declaration.aux
-INPUT Acknowledgement\declaration.aux
-INPUT .\Chapter1\chapter1.aux
-INPUT .\Chapter1\chapter1.aux
-INPUT Chapter1\chapter1.aux
-INPUT .\Chapter2\chapter2.aux
-INPUT .\Chapter2\chapter2.aux
-INPUT Chapter2\chapter2.aux
-INPUT .\Chapter3\chapter3.aux
-INPUT .\Chapter3\chapter3.aux
-INPUT Chapter3\chapter3.aux
-INPUT .\Chapter4\chapter4.aux
-INPUT .\Chapter4\chapter4.aux
-INPUT Chapter4\chapter4.aux
-INPUT .\Chapter5\chapter5.aux
-INPUT .\Chapter5\chapter5.aux
-INPUT Chapter5\chapter5.aux
-INPUT .\Chapter6\chapter6.aux
-INPUT .\Chapter6\chapter6.aux
-INPUT Chapter6\chapter6.aux
-INPUT .\Appendix1\appendix1.aux
-INPUT .\Appendix1\appendix1.aux
-INPUT Appendix1\appendix1.aux
-INPUT .\Appendix2\appendix2.aux
-INPUT .\Appendix2\appendix2.aux
-INPUT Appendix2\appendix2.aux
-INPUT .\References\ref.aux
-INPUT .\References\ref.aux
-INPUT References\ref.aux
-INPUT .\Thesis.out
-INPUT .\Thesis.out
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmbx12.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmbx12.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmmi12.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmmi12.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmmi8.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmmi8.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmr12.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmr12.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmr8.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmr8.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy10.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy10.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy8.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy8.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\euler\eusm10.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\euler\eusm10.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\symbols\msbm10.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\public\amsfonts\symbols\msbm10.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\urw\courier\ucrr8a.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\urw\courier\ucrr8a.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\urw\times\utmb8a.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\urw\times\utmb8a.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\urw\times\utmr8a.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\urw\times\utmr8a.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\urw\times\utmri8a.pfb
-INPUT C:\Program Files\MiKTeX\fonts\type1\urw\times\utmri8a.pfb

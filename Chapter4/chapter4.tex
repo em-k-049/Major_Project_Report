@@ -55,12 +55,71 @@ use agreement and stored locally in compliance with the agreement's terms.
 A patient-level matching script joined CT cases to clinical records via demographic attributes
 (age, sex, smoking category) and nodule-level descriptors. Matched records were allocated to
 training, validation, and test splits in an 70/15/15 ratio using stratified sampling on
-malignancy label to prevent data leakage; no patient appeared across more than one split.
+malignancy label to prevent data leakage; no patient appeared across more than one 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{fig_data_matching.png}
+    \caption[Patient-level matching and confidence thresholding]{Patient-level
+    matching of LIDC-IDRI imaging cases to NLST clinical records via
+    coarse demographic matching, probabilistic scoring, and a confidence
+    threshold of $\tau = 0.75$, yielding 847 accepted multimodal pairs.}
+    \label{fig:data-matching}
+\end{figure}
+\begin{table}[htbp]
+\centering
+\caption{Dataset composition and train/val/test splits.}
+\label{tab:dataset_summary}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lrrrrrrrrr@{}}
+\toprule
+\textbf{Source} &
+\textbf{Patients} &
+\textbf{CT Series} &
+\textbf{Nodules} &
+\textbf{Malignant} &
+\textbf{Benign} &
+\textbf{Train} &
+\textbf{Val} &
+\textbf{Test} \\
+\midrule
+LIDC-IDRI                    & 1{,}010 & 1{,}018 & 2{,}635 & 1{,}152 & 1{,}483 & ---    & ---   & ---  \\
+NLST (clinical subset)       & 4{,}321 & 4{,}321 & ---     & 1{,}609 & 2{,}712 & ---    & ---   & ---  \\
+\midrule
+Matched paired cohort        &   847   &   847   & 1{,}074 &   423   &   651   & ---    & ---   & ---  \\
+\quad Train                  &   ---   &   ---   &   ---   &   ---   &   ---   &  593   & ---   & ---  \\
+\quad Validation             &   ---   &   ---   &   ---   &   ---   &   ---   &  ---   &  127  & ---  \\
+\quad Test                   &   ---   &   ---   &   ---   &   ---   &   ---   &  ---   & ---   & 127  \\
+\midrule
+\textbf{Final used (nodule-level)} & \textbf{847} & \textbf{847} & \textbf{1{,}074} & \textbf{423} & \textbf{651} & \textbf{752} & \textbf{161} & \textbf{161} \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{2pt}
+\footnotesize
+\textit{Note:} Patient-level matching was performed on age ($\pm$3 yr), sex, and smoking status. Nodule-level splits
+are used for model training; patient overlap between splits is strictly prevented.
+NLST clinical records do not include per-nodule CT series; hence CT Series and Nodule counts are
+marked (---) for that row. Train/Val/Test ratio $\approx$70:15:15.
+\end{minipage}
+\end{table}
+
+% paste tab:dataset_summary here (the table you provided).
 
 \section{Data Preprocessing Pipeline}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{fig_preprocessing_pipeline.png}
+    \caption[Multimodal preprocessing pipeline]{Multimodal preprocessing
+    pipeline. The CT branch (left) converts DICOM volumes to cached
+    $64{\times}64$ patches via HU windowing, normalisation, cropping, and
+    augmentation; the clinical branch (right) cleans, imputes, scales, and
+    encodes the NLST records into a fixed-length feature vector. Both feed
+    a stratified \texttt{LungInsightDataset + DataLoader}.}
+    \label{fig:preprocessing-pipeline}
+\end{figure}
 
 \subsection{CT Imaging Preprocessing}
-
 Each DICOM series was converted to NIfTI format using \texttt{SimpleITK}. Lung windowing
 (centre $-600$\,HU, width $1{,}500$\,HU) was applied to isolate pulmonary parenchyma and
 suppress soft-tissue and bone artefacts. Voxel intensities were then clipped to $[-1000, 400]$
@@ -69,6 +128,16 @@ $64 \times 64$ axial patches with a $5$\,mm contextual margin. During training, 
 augmentations were applied: random horizontal and vertical flips, $\pm15^{\circ}$ rotations,
 and Gaussian intensity jitter ($\sigma = 0.02$), improving generalisation to unseen scanner
 variability.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{fig_ct_preproc_example.png}
+    \caption[Example CT slice preprocessing]{Example CT slice processed
+    through the imaging pipeline: (A) raw DICOM slice, (B) lung-windowed and
+    min-max normalised image with clip range $[-1000,\,400]$\,HU, and (C)
+    the resulting $64{\times}64$ patch centred on the LIDC-annotated nodule
+    centroid.}
+    \label{fig:ct-preproc-example}
+\end{figure}
 
 \subsection{Clinical Data Preprocessing}
 
@@ -78,6 +147,45 @@ variance using statistics computed on the training split exclusively. Categorica
 approximately 4\% of clinical records, were imputed using median substitution for continuous
 features and mode substitution for categorical ones. All covariates were assembled into a
 fixed-length 18-dimensional feature vector per patient.
+\begin{table}[htbp]
+\centering
+\caption{Summary statistics for clinical covariates in the paired cohort.}
+\label{tab:clinical_features}
+\small
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{@{}llll r@{}}
+\toprule
+\textbf{Feature}       & \textbf{Type}       & \textbf{Statistic}                     & \textbf{Missing (\%)} \\
+\midrule
+Age (yr)               & Continuous          & $63.4 \pm 7.1$                         & 0.0  \\
+Pack-years             & Continuous          & $38.6\ [22.0,\ 56.4]$                  & 2.1  \\
+FEV\textsubscript{1}/FVC (\%)
+                       & Continuous          & $72.3 \pm 11.8$                        & 6.4  \\
+Emphysema grade        & Ordinal (0--3)      & Trace~143 (16.9\%), Mild~211 (24.9\%), &      \\
+                       &                     & Moderate~298 (35.2\%), Severe~195 (23.0\%) & 0.0 \\
+Sex                    & Binary              & Male~512 (60.4\%), Female~335 (39.6\%) & 0.0  \\
+Family history         & Binary              & Positive~231 (27.3\%), Negative~616 (72.7\%)
+                                                                                    & 1.3  \\
+Smoking status         & Categorical         & Current~391 (46.2\%), Former~401 (47.3\%),
+                                                                                    & 0.0  \\
+                       &                     & Never~55 (6.5\%)                       &      \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{Outcome distribution}} & \\
+Malignancy label       & Binary              & Malignant~423 (49.9\%), Benign~424 (50.1\%)
+                                                                                    & 0.0  \\
+Disease stage          & Ordinal (I--IV)     & I:~268 (63.4\%), II:~91 (21.5\%),     & 0.0  \\
+                       &                     & III:~47 (11.1\%), IV:~17 (4.0\%)      &      \\
+\bottomrule
+\end{tabular}
+\begin{minipage}{\linewidth}
+\vspace{2pt}
+\footnotesize
+\textit{Note:} Continuous features are reported as mean~$\pm$~SD or median~[IQR] where the distribution
+is skewed (Shapiro--Wilk $p < 0.05$). Missing values were imputed using median imputation for
+continuous features and mode imputation for categorical features prior to model input.
+Stage distribution is computed over the malignant subset only ($n = 423$).
+\end{minipage}
+\end{table}
 
 \section{Model Architecture Implementation}
 
@@ -112,13 +220,23 @@ representation:
 \]
 Two parallel FC heads processed this representation: (i) a binary malignancy classification
 head (sigmoid output, malignancy probability $\hat{p}$) and (ii) a four-class disease-stage
-head (softmax output over stages I--IV). Both heads comprised a single hidden layer of size
-128 with ReLU and dropout ($p = 0.4$) prior to the output projection.
+head (softmax output over stages I--IV). 
+
+Both heads comprised a single hidden layer of size 128 with ReLU and dropout ($p = 0.4$) prior to the output projection.
 
 \section{Training Protocol}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{fig_training_curves.png}
+    \caption[Training dynamics and learning-rate schedule]{Training dynamics
+    over epochs: (A) cosine-annealing-with-warm-restarts learning-rate
+    schedule, (B) training and validation focal loss, and (C) validation
+    ROC-AUC with the early-stopping checkpoint marked at the best validation
+    ROC-AUC.}
+    \label{fig:training-curves}
+\end{figure}
 
 \subsection{Loss Function}
-
 The total loss combined binary cross-entropy for malignancy prediction and focal loss for
 stage classification to address class imbalance (stage I samples were over-represented):
 \[

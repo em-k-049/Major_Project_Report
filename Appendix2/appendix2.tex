@@ -1,62 +1,168 @@
 ﻿\chapter{Implementation and Experimental Details}
+\label{ch:impl-details}
+\thispagestyle{empty}
 
-This appendix documents the supplementary implementation details, training configuration, and software environment used by LungInsight.
+This appendix supplements Chapter~4 by documenting the implementation
+choices, training configuration, explainability setup, and software
+environment used to realise the LungInsight system. The level of detail is
+chosen to be sufficient for an independent team to reproduce the results
+reported in the main thesis.
 
+%-----------------------------------------------------------------------
 \section{Model Implementation}
-The LungInsight architecture consists of two parallel branches:
+\label{sec:appB-model}
+
+The LungInsight model is implemented as a single PyTorch~\cite{paszke2019pytorch}
+\texttt{nn.Module} with two parallel branches and a late-fusion head.
 
 \begin{itemize}
-    \item A DenseNet-121 imaging branch adapted for single-channel grayscale CT input, followed by a 256-dimensional projection layer.
-    \item A three-layer clinical multilayer perceptron that processes the 18-dimensional clinical vector into a 64-dimensional embedding.
+    \item A \textbf{DenseNet-121}~\cite{huang2017densely} imaging branch
+          pretrained on ImageNet, adapted for single-channel grayscale CT
+          input by replacing the first convolutional layer with a
+          channel-averaged copy of the original RGB filters. The final
+          classification head is replaced by a $256$-dimensional fully
+          connected projection layer with ReLU activation and batch
+          normalisation, producing an imaging embedding
+          $\mathbf{z}_{\text{img}} \in \mathbb{R}^{256}$.
+    \item A \textbf{three-layer clinical multilayer perceptron} that maps the
+          $18$-dimensional clinical vector to a $64$-dimensional embedding
+          $\mathbf{z}_{\text{clin}} \in \mathbb{R}^{64}$. Each hidden layer
+          uses ReLU activation, batch normalisation, and dropout with
+          probability $0.3$.
 \end{itemize}
 
-The two embeddings are concatenated into a 320-dimensional fused representation. Two output heads operate on this representation: a binary malignancy head with sigmoid activation and a four-class stage head with softmax activation.
+The two embeddings are concatenated into a $320$-dimensional fused
+representation $\mathbf{z} = [\mathbf{z}_{\text{img}} \,\|\, \mathbf{z}_{\text{clin}}]$.
+Two output heads operate on this representation:
 
+\begin{itemize}
+    \item a \textbf{binary malignancy head} with sigmoid activation producing
+          $p(\text{malignant} \mid \mathbf{z}) \in [0, 1]$;
+    \item a \textbf{four-class stage head} with softmax activation producing
+          $p(\text{stage} \mid \mathbf{z}) \in \Delta^{3}$.
+\end{itemize}
+
+%-----------------------------------------------------------------------
 \section{Training Configuration}
-The model was trained with the following configuration:
+\label{sec:appB-training}
 
-\begin{tabular}{lp{0.7\textwidth}}
-\textbf{Optimizer} & AdamW with weight decay $10^{-4}$ \\
-\textbf{Backbone learning rate} & $1 \times 10^{-4}$ \\
-\textbf{Projection/head learning rate} & $5 \times 10^{-4}$ \\
-\textbf{Batch size} & 16 paired CT and clinical examples \\
-\textbf{Epochs} & 60 \\
-\textbf{Scheduler} & Cosine annealing with warm restarts \\
-\textbf{Warm-up strategy} & backbone frozen for first 3 epochs \\
-\textbf{Mixed precision} & Enabled with \texttt{torch.cuda.amp} \\
+The model is trained end-to-end with the configuration summarised in
+Table~\ref{tab:appendix2-training}. Class imbalance is addressed both at the
+sampling level (weighted random sampler) and at the loss level (focal
+loss~\cite{lin2017focal} with inverse class-frequency weighting). Optimisation
+uses AdamW~\cite{loshchilov2019decoupled} with decoupled weight decay.
+
+\begin{table}[H]
+\centering
+\caption{LungInsight training configuration.}
+\label{tab:appendix2-training}
+\begin{tabular}{l p{0.62\textwidth}}
+\toprule
+\textbf{Hyperparameter} & \textbf{Value} \\
+\midrule
+Optimiser                       & AdamW with weight decay $10^{-4}$~\cite{loshchilov2019decoupled} \\
+Backbone learning rate          & $1 \times 10^{-4}$ \\
+Projection / head learning rate & $5 \times 10^{-4}$ \\
+Batch size                      & $16$ paired (CT, clinical) examples \\
+Epochs                          & $60$ (early stopping at $\sim$45) \\
+LR scheduler                    & Cosine annealing with warm restarts \\
+Warm-up strategy                & Backbone frozen for first $3$ epochs \\
+Loss (malignancy)               & Focal loss, $\gamma = 2$, $\alpha$ from class frequency \\
+Loss (stage)                    & Weighted cross-entropy \\
+Mixed precision                 & Enabled via \texttt{torch.cuda.amp} \\
+Gradient clipping               & $\ell_{2}$ norm clipped at $1.0$ \\
+Random seed                     & $42$ (cohort split, sampler, augmentation) \\
+\bottomrule
 \end{tabular}
+\end{table}
 
-Early stopping monitored validation ROC-AUC with a patience of 10 epochs. The checkpoint with the best validation ROC-AUC was retained for evaluation.
+Early stopping monitors validation ROC-AUC with a patience of $10$ epochs.
+The checkpoint with the best validation ROC-AUC is retained for evaluation on
+the held-out test split.
 
+%-----------------------------------------------------------------------
 \section{Explainability and Inference}
-Grad-CAM was applied to the last convolutional block of the DenseNet imaging branch. During inference, all batch-normalization layers were set to evaluation mode and the Grad-CAM computation was performed inside a \texttt{torch.no\_grad()} context to avoid retaining unnecessary computation graphs.
+\label{sec:appB-xai}
 
-SHAP values were computed using a \texttt{DeepExplainer} with a background set of 100 representative training clinical feature vectors. Separate attributions were generated for clinical inputs and fused representations.
+\textbf{Grad-CAM.} Grad-CAM~\cite{selvaraju2017grad} is applied to the final
+convolutional block of the DenseNet imaging branch
+(\texttt{model.imaging\_branch.features.denseblock4}). For a given CT patch,
+the gradient of the predicted malignancy score with respect to the target
+feature maps is global-average-pooled to produce channel weights; the
+weighted activation map is upsampled bilinearly to the input patch resolution
+and normalised to $[0, 1]$. During inference, all batch-normalisation layers
+are placed in evaluation mode and the Grad-CAM computation is performed
+within a \texttt{torch.no\_grad()} context to avoid retaining unnecessary
+computation graphs.
 
+\begin{verbatim}
+from pytorch_grad_cam import GradCAM
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+
+target_layer = model.imaging_branch.features.denseblock4
+cam          = GradCAM(model=model, target_layers=[target_layer])
+heatmap      = cam(input_tensor=ct_patch,
+                   targets=[ClassifierOutputTarget(1)])
+\end{verbatim}
+
+\textbf{SHAP.} SHAP~\cite{lundberg2017unified} values are computed using a
+\texttt{DeepExplainer} instantiated with a background set of $100$
+representative training clinical feature vectors. Separate attribution sets
+are produced for: (i) the raw clinical inputs, and (ii) the fused
+representation $\mathbf{z}$. The clinical-input attributions are rendered as
+SHAP waterfall plots in the dashboard; the cohort-level attributions are
+rendered as beeswarm summary plots.
+
+\textbf{Inference pipeline.} A dedicated \texttt{InferencePipeline} class
+wraps the model and exposes a single
+\texttt{predict(dicom\_path, clinical\_dict)} interface that performs
+DICOM-to-tensor conversion, clinical vector construction, model forward pass,
+Grad-CAM, and SHAP computation in sequence. Model weights are exported to
+TorchScript for faster dashboard inference, and SHAP background samples are
+precomputed on application start-up.
+
+%-----------------------------------------------------------------------
 \section{Dashboard and Deployment}
-The clinical decision-support interface was implemented with Streamlit. The dashboard accepts either a DICOM CT series upload or a CSV file containing clinical covariates. It displays:
+\label{sec:appB-dashboard}
+
+The clinical decision-support interface is implemented with
+Streamlit~\cite{streamlit2021}. The dashboard accepts either a DICOM CT
+series upload or a CSV file containing clinical covariates, and displays:
 
 \begin{itemize}
-    \item predicted malignancy probability,
-    \item predicted disease stage with confidence scores,
-    \item Grad-CAM heatmap overlay on the most informative axial slice,
-    \item SHAP waterfall plot for the current patient and beeswarm summary for the cohort.
+    \item the predicted malignancy probability rendered as a gauge chart;
+    \item the predicted disease stage with per-class confidence scores;
+    \item a Grad-CAM heatmap overlaid on the most informative axial slice
+          using a \texttt{jet} colourmap;
+    \item a SHAP waterfall plot for the current patient alongside a beeswarm
+          summary across the test cohort.
 \end{itemize}
 
-Model weights were exported to TorchScript for faster dashboard inference, and SHAP background samples were precomputed on startup to reduce prediction latency.
+The application is packaged as a Docker~\cite{docker2020} container,
+ensuring identical behaviour across development, evaluation, and deployment
+environments. Per-prediction latency on commodity hardware (CPU-only
+inference) is under two seconds with the TorchScript export and the
+precomputed SHAP background.
 
+%-----------------------------------------------------------------------
 \section{Software Environment}
-The implementation used the following software stack:
+\label{sec:appB-software}
+
+The implementation uses the following software stack. Exact versions are
+pinned in the \texttt{requirements.txt} and \texttt{Dockerfile} that ship
+with the project repository.
 
 \begin{itemize}
     \item Python 3.10
-    \item PyTorch 2.1 and torchvision
-    \item scikit-learn
-    \item pytorch-grad-cam
-    \item shap
-    \item SimpleITK
-    \item Streamlit 1.32
-    \item Docker for containerization
+    \item PyTorch 2.1 and torchvision~\cite{paszke2019pytorch}
+    \item scikit-learn~\cite{pedregosa2011scikit}
+    \item \texttt{pytorch-grad-cam}~\cite{selvaraju2017grad}
+    \item \texttt{shap}~\cite{lundberg2017unified}
+    \item SimpleITK~\cite{muschelli2014simpleitk}
+    \item Streamlit 1.32~\cite{streamlit2021}
+    \item Docker for containerisation~\cite{docker2020}
 \end{itemize}
 
-The appendix is intended to provide enough technical detail to reproduce the preprocessing, model training, and dashboard deployment described in the thesis.
+This appendix is intended to provide enough technical detail to reproduce
+the preprocessing, model training, explainability, and dashboard deployment
+described in the main thesis.
